@@ -117,8 +117,29 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
       {/* =========================================================================
           HERO STAGE: Exact Replica of Awake Agency (Red Framed Card)
           ========================================================================= */}
-      <div className="w-full rounded-[24px] sm:rounded-[32px] bg-[#ff003d] text-white min-h-[calc(100vh-2.5rem)] relative overflow-hidden flex flex-col justify-between p-6 sm:p-10 lg:p-14 shadow-2xl">
-        
+      <div
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        className={`w-full rounded-[24px] sm:rounded-[32px] bg-[#ff003d] text-white min-h-[calc(100vh-2.5rem)] relative overflow-hidden flex flex-col justify-between p-6 sm:p-10 lg:p-14 shadow-2xl transition-all ${
+          isDragOver ? 'ring-4 ring-white ring-inset scale-[0.998]' : ''
+        }`}
+      >
+        {/* Full Card Drag-and-Drop Overlay */}
+        {isDragOver && (
+          <div className="absolute inset-0 z-50 bg-[#ff003d]/92 backdrop-blur-xs flex flex-col items-center justify-center pointer-events-none animate-in fade-in zoom-in-95 duration-200">
+            <div className="w-20 h-20 rounded-full bg-white text-[#ff003d] flex items-center justify-center shadow-2xl mb-4 animate-bounce">
+              <Upload className="w-9 h-9" />
+            </div>
+            <h3 className="font-display text-3xl sm:text-4xl font-extrabold uppercase tracking-tight text-white">
+              Drop PDF to Reflow
+            </h3>
+            <p className="text-white/80 text-xs sm:text-sm mt-2 font-medium tracking-widest uppercase">
+              100% Client-side · Bookerly Typography · Two-Page Spread
+            </p>
+          </div>
+        )}
+
         {/* Interactive Physics Coins with Moving 'k.' */}
         <HeroCoins onCoinClick={() => fileInputRef.current?.click()} />
 
@@ -134,35 +155,40 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
             </a>
           </div>
 
-          {/* Action Pills */}
-          <div className="flex items-center gap-2.5 sm:gap-3">
-            {/* Open PDF Pill */}
+          {/* Action Pills: Maximally Visible Primary CTA for Core Purpose */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Primary Hero CTA: Open PDF */}
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="awake-pill px-5 sm:px-6 py-2 sm:py-2.5 text-xs sm:text-sm font-medium bg-white/30 hover:bg-white/40 text-white backdrop-blur-xs transition shadow-xs"
+              className="awake-pill group relative px-4 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-bold bg-white text-[#ff003d] hover:bg-white/95 hover:scale-[1.03] active:scale-[0.98] transition-all shadow-lg flex items-center gap-2 cursor-pointer"
+              title="Upload PDF to reflow into a book"
             >
+              <Upload className="w-3.5 h-3.5 text-[#ff003d] group-hover:-translate-y-0.5 transition-transform" />
               <span>open pdf.</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-[#ff003d] animate-pulse" />
             </button>
 
-            {/* Read Sample Pill */}
+            {/* Read Classic Sample Pill */}
             <button
               onClick={onOpenSampleBook}
-              className="awake-pill hidden sm:inline-flex px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium bg-white/20 hover:bg-white/30 text-white backdrop-blur-xs transition shadow-xs"
+              className="awake-pill hidden sm:inline-flex px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium bg-white/20 hover:bg-white/30 border border-white/40 text-white backdrop-blur-xs hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xs items-center gap-1.5 cursor-pointer"
+              title="Read a sample classic book immediately"
             >
+              <BookOpen className="w-3.5 h-3.5 text-white" />
               <span>sample book.</span>
             </button>
 
             {/* Awake Signature Menu Pill */}
             <button
               onClick={() => setIsMenuOpen(true)}
-              className="awake-pill group px-4 sm:px-5 py-2 sm:py-2.5 bg-white hover:bg-white/95 text-[#ff003d] transition shadow-md flex items-center gap-3 font-medium text-xs sm:text-sm"
+              className="awake-pill group px-3.5 sm:px-4 py-2 sm:py-2.5 bg-white/20 hover:bg-white/30 border border-white/30 text-white transition shadow-xs flex items-center gap-2.5 font-medium text-xs sm:text-sm cursor-pointer"
               aria-label="Open menu"
             >
               <span>menu.</span>
-              <div className="flex flex-col gap-1 w-4 items-end overflow-hidden py-0.5">
-                <span className="burger-line-1 block h-[1.5px] w-4 bg-[#ff003d] rounded-full" />
-                <span className="burger-line-2 block h-[1.5px] w-2.5 group-hover:w-4 transition-all bg-[#ff003d] rounded-full" />
-                <span className="burger-line-3 block h-[1.5px] w-3.5 group-hover:w-4 transition-all bg-[#ff003d] rounded-full" />
+              <div className="flex flex-col gap-1 w-3.5 items-end overflow-hidden py-0.5">
+                <span className="burger-line-1 block h-[1.5px] w-3.5 bg-white rounded-full" />
+                <span className="burger-line-2 block h-[1.5px] w-2 group-hover:w-3.5 transition-all bg-white rounded-full" />
+                <span className="burger-line-3 block h-[1.5px] w-3 group-hover:w-3.5 transition-all bg-white rounded-full" />
               </div>
             </button>
           </div>
@@ -183,17 +209,33 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
               <SwapWord word="PEOPLE" />
             </div>
 
-            {/* Line 3: REMEMBER. ............... Kicker Paragraph */}
+            {/* Line 3: REMEMBER. ............... Kicker Paragraph + Action Buttons */}
             <div className="flex flex-col sm:flex-row sm:items-end justify-between w-full gap-4 sm:gap-6 pt-1">
               <div className="font-display font-medium uppercase text-[clamp(2.75rem,7.5vw,7.2rem)] leading-[0.98] tracking-[-0.015em] text-white" data-coins-above="">
                 <span data-coin-step="3"><SwapWord word="REMEMBER." /></span>
               </div>
 
-              {/* PDF Reader Kicker Paragraph (clean normal-case text) */}
-              <div className="pointer-events-auto text-left max-w-[340px] sm:mb-2" data-coins-kicker="">
+              {/* PDF Reader Kicker Paragraph + Direct Action Buttons */}
+              <div className="pointer-events-auto text-left max-w-[360px] sm:mb-2 space-y-3" data-coins-kicker="">
                 <p className="font-body-sans normal-case text-xs sm:text-[13px] font-normal text-white/90 leading-[1.65] tracking-normal">
                   Kindle Reflow transforms static, fixed-page PDFs into fluid, responsive books. Enjoy Bookerly typography, two-page hardcover spreads, built-in offline dictionary, and zero zoom fatigue.
                 </p>
+                <div className="flex items-center gap-2.5 pt-0.5">
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    className="awake-pill group px-4 py-2 bg-white text-[#ff003d] font-bold text-xs tracking-wider uppercase hover:bg-white/95 hover:scale-[1.03] active:scale-[0.98] transition-all shadow-md flex items-center gap-2 cursor-pointer"
+                  >
+                    <Upload className="w-3.5 h-3.5 group-hover:-translate-y-0.5 transition-transform" />
+                    <span>Upload PDF</span>
+                  </button>
+                  <button
+                    onClick={onOpenSampleBook}
+                    className="awake-pill px-3.5 py-2 bg-white/20 hover:bg-white/30 border border-white/40 text-white font-medium text-xs tracking-wider uppercase hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <BookOpen className="w-3.5 h-3.5" />
+                    <span>Try Classic</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -202,8 +244,9 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
         {/* Bottom Metadata Bar inside Red Card */}
         <div data-coins-floor="" className="relative z-20 pt-4 border-t border-white/20 flex flex-col sm:flex-row sm:items-center justify-between text-[11px] sm:text-xs uppercase tracking-wider text-white font-medium gap-2 pointer-events-auto">
           <div className="flex items-center gap-2">
-            <span className="opacity-75">ENGINE:</span>
-            <span>PDF.JS REFLOW 2.0 · 100% PRIVATE CLIENT-SIDE</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
+            <span className="opacity-75">QUICK START:</span>
+            <span>CLICK COINS · DROP ANY PDF · INSTANT REFLOW</span>
           </div>
 
           <div className="flex items-center gap-2">
