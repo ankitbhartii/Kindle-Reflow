@@ -130,7 +130,7 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
               href="/"
               className="font-display font-medium text-[1.75rem] sm:text-[1.9rem] tracking-tight text-white select-none cursor-pointer leading-none"
             >
-              <SwapWord word="kindle." className="font-medium" />
+              <SwapWord word="Kindle-Reflow" className="font-medium" />
             </a>
           </div>
 
@@ -218,7 +218,7 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
         <div className="fixed inset-0 z-50 bg-[#ff003d] text-white p-6 sm:p-12 flex flex-col justify-between animate-in fade-in zoom-in-95 duration-300">
           <div className="flex items-center justify-between border-b border-white/20 pb-6">
             <div className="flex items-center gap-3">
-              <span className="font-display font-black text-2xl tracking-tighter">KINDLE.</span>
+              <span className="font-display font-black text-2xl tracking-tighter">KINDLE-REFLOW</span>
               <span className="text-xs uppercase tracking-widest font-semibold px-2.5 py-0.5 rounded-full bg-white/20">
                 Menu
               </span>
