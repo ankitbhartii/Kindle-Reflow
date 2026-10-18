@@ -10,6 +10,7 @@ import {
   ArrowRight,
   Highlighter,
   MessageSquare,
+  Sparkles,
 } from 'lucide-react';
 
 interface ContentsDrawerProps {
@@ -53,52 +54,51 @@ export const ContentsDrawer: React.FC<ContentsDrawerProps> = ({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-xs sm:max-w-sm h-full bg-(--bg-surface) text-(--text-primary) border-r border-(--border-color) shadow-2xl flex flex-col transform transition-transform duration-300"
+        className="w-full max-w-xs sm:max-w-md h-full bg-(--bg-surface) text-(--text-primary) border-r border-(--c-grey-line) shadow-2xl flex flex-col transform transition-transform duration-300"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Drawer Header */}
-        <div className="p-4 sm:p-5 border-b border-(--border-color) flex items-center justify-between">
+        {/* Awake Drawer Header */}
+        <div className="p-5 sm:p-6 border-b border-(--c-grey-line) flex items-center justify-between">
           <div className="min-w-0 pr-3">
-            <h2 className="font-serif font-bold text-base truncate">{book.metadata.title}</h2>
+            <span className="text-[10px] uppercase tracking-widest font-bold text-[#ff003d] block mb-0.5">Index & Drawer</span>
+            <h2 className="font-display font-bold text-lg sm:text-xl truncate text-(--c-ink)">
+              {book.metadata.title}
+            </h2>
             <p className="text-xs text-(--text-secondary) truncate">{book.metadata.author}</p>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-full hover:bg-(--bg-subtle) text-(--text-secondary) transition-colors"
+            className="p-2 rounded-full hover:bg-(--bg-subtle) text-(--text-secondary) transition-colors"
             aria-label="Close drawer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Tab Switcher */}
-        <div className="flex border-b border-(--border-color) bg-(--bg-subtle)/50 text-xs font-medium">
+        {/* Awake Pill Tab Switcher */}
+        <div className="p-3 border-b border-(--c-grey-line) bg-(--bg-subtle)/40 flex items-center gap-1.5">
           <button
             onClick={() => setActiveTab('toc')}
-            className={`flex-1 py-3 flex items-center justify-center gap-1 border-b-2 transition ${
+            className={`awake-pill flex-1 py-2 text-xs font-semibold transition ${
               activeTab === 'toc'
-                ? 'border-blue-600 text-blue-600 font-semibold bg-(--bg-surface)'
-                : 'border-transparent text-(--text-secondary) hover:text-(--text-primary)'
+                ? 'bg-[#ff003d] text-white shadow-xs'
+                : 'text-(--text-secondary) hover:bg-(--bg-surface)'
             }`}
-            title="Table of Contents"
           >
-            <ListOrdered className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Contents</span>
+            <span>TOC</span>
           </button>
 
           <button
             onClick={() => setActiveTab('highlights')}
-            className={`flex-1 py-3 flex items-center justify-center gap-1 border-b-2 transition relative ${
+            className={`awake-pill flex-1 py-2 text-xs font-semibold transition relative ${
               activeTab === 'highlights'
-                ? 'border-blue-600 text-blue-600 font-semibold bg-(--bg-surface)'
-                : 'border-transparent text-(--text-secondary) hover:text-(--text-primary)'
+                ? 'bg-[#ff003d] text-white shadow-xs'
+                : 'text-(--text-secondary) hover:bg-(--bg-surface)'
             }`}
-            title="Highlights & Notes"
           >
-            <Highlighter className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Notes</span>
+            <span>Notes</span>
             {highlights.length > 0 && (
-              <span className="px-1.5 py-0.2 bg-teal-500 text-white text-[10px] rounded-full font-bold">
+              <span className="ml-1 px-1.5 py-0.2 bg-white text-[#ff003d] text-[10px] rounded-full font-bold">
                 {highlights.length}
               </span>
             )}
@@ -106,17 +106,15 @@ export const ContentsDrawer: React.FC<ContentsDrawerProps> = ({
 
           <button
             onClick={() => setActiveTab('bookmarks')}
-            className={`flex-1 py-3 flex items-center justify-center gap-1 border-b-2 transition relative ${
+            className={`awake-pill flex-1 py-2 text-xs font-semibold transition relative ${
               activeTab === 'bookmarks'
-                ? 'border-blue-600 text-blue-600 font-semibold bg-(--bg-surface)'
-                : 'border-transparent text-(--text-secondary) hover:text-(--text-primary)'
+                ? 'bg-[#ff003d] text-white shadow-xs'
+                : 'text-(--text-secondary) hover:bg-(--bg-surface)'
             }`}
-            title="Bookmarks"
           >
-            <BookmarkIcon className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Marks</span>
+            <span>Marks</span>
             {bookmarks.length > 0 && (
-              <span className="px-1.5 py-0.2 bg-blue-600 text-white text-[10px] rounded-full font-bold">
+              <span className="ml-1 px-1.5 py-0.2 bg-white text-[#ff003d] text-[10px] rounded-full font-bold">
                 {bookmarks.length}
               </span>
             )}
@@ -124,26 +122,25 @@ export const ContentsDrawer: React.FC<ContentsDrawerProps> = ({
 
           <button
             onClick={() => setActiveTab('info')}
-            className={`flex-1 py-3 flex items-center justify-center gap-1 border-b-2 transition ${
+            className={`awake-pill flex-1 py-2 text-xs font-semibold transition ${
               activeTab === 'info'
-                ? 'border-blue-600 text-blue-600 font-semibold bg-(--bg-surface)'
-                : 'border-transparent text-(--text-secondary) hover:text-(--text-primary)'
+                ? 'bg-[#ff003d] text-white shadow-xs'
+                : 'text-(--text-secondary) hover:bg-(--bg-surface)'
             }`}
-            title="Statistics"
           >
-            <BookOpen className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Stats</span>
+            <span>Stats</span>
           </button>
         </div>
 
         {/* Tab Content */}
-        <div className="flex-1 overflow-y-auto no-scrollbar p-3 space-y-1">
+        <div className="flex-1 overflow-y-auto no-scrollbar p-4 space-y-2">
           {/* TOC Tab */}
           {activeTab === 'toc' && (
-            <div className="space-y-1">
+            <div className="space-y-1.5">
               {book.toc.length > 0 ? (
                 book.toc.map((item, idx) => {
                   const isCurrent = item.sectionIndex === currentSectionIndex;
+                  const idxStr = String(idx + 1).padStart(2, '0');
                   return (
                     <button
                       key={item.id || idx}
@@ -151,15 +148,18 @@ export const ContentsDrawer: React.FC<ContentsDrawerProps> = ({
                         onSelectSection(item.sectionIndex);
                         onClose();
                       }}
-                      className={`w-full text-left p-3 rounded-xl transition flex items-center justify-between group ${
+                      className={`w-full text-left p-3.5 rounded-2xl transition flex items-center justify-between group ${
                         isCurrent
-                          ? 'bg-blue-50/15 border border-blue-500/40 font-semibold text-blue-600'
-                          : 'hover:bg-(--bg-subtle) text-(--text-primary)'
+                          ? 'bg-[#ff003d]/10 border-2 border-[#ff003d] font-bold text-[#ff003d]'
+                          : 'hover:bg-(--bg-subtle) border border-transparent text-(--text-primary)'
                       }`}
                     >
                       <div className="min-w-0 pr-2">
-                        <div className="text-sm truncate">{item.title}</div>
-                        <div className="text-[11px] text-(--text-muted)">
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono text-xs opacity-60">[{idxStr}]</span>
+                          <span className="text-sm font-display font-medium truncate">{item.title}</span>
+                        </div>
+                        <div className="text-[11px] text-(--text-muted) pl-7 mt-0.5">
                           Section {item.sectionIndex + 1}
                           {item.pageNumber ? ` • Page ${item.pageNumber}` : ''}
                         </div>
@@ -167,15 +167,15 @@ export const ContentsDrawer: React.FC<ContentsDrawerProps> = ({
                       <ArrowRight
                         className={`w-4 h-4 shrink-0 transition-transform ${
                           isCurrent
-                            ? 'text-blue-600'
-                            : 'text-(--text-muted) opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5'
+                            ? 'text-[#ff003d]'
+                            : 'text-(--text-muted) opacity-0 group-hover:opacity-100 group-hover:translate-x-1'
                         }`}
                       />
                     </button>
                   );
                 })
               ) : (
-                <div className="p-6 text-center text-sm text-(--text-muted)">
+                <div className="p-8 text-center text-sm text-(--text-muted)">
                   No outline found in this document.
                 </div>
               )}
@@ -184,11 +184,11 @@ export const ContentsDrawer: React.FC<ContentsDrawerProps> = ({
 
           {/* Highlights & Notes Tab */}
           {activeTab === 'highlights' && (
-            <div className="space-y-2">
+            <div className="space-y-3">
               {highlights.length === 0 ? (
                 <div className="p-8 text-center text-sm text-(--text-muted) space-y-3">
-                  <Highlighter className="w-8 h-8 mx-auto opacity-30" />
-                  <p>No highlights or notes yet.</p>
+                  <Highlighter className="w-8 h-8 mx-auto opacity-30 text-[#ff003d]" />
+                  <p className="font-display font-bold">No highlights or notes yet.</p>
                   <p className="text-xs">
                     Select any word or passage in the book to highlight it or attach notes.
                   </p>
@@ -197,7 +197,7 @@ export const ContentsDrawer: React.FC<ContentsDrawerProps> = ({
                 highlights.map((hl) => (
                   <div
                     key={hl.id}
-                    className="p-3 rounded-xl border border-(--border-color) bg-(--bg-subtle)/40 hover:bg-(--bg-subtle) transition group"
+                    className="p-3.5 rounded-2xl border border-(--c-grey-line) bg-(--bg-subtle)/40 hover:bg-(--bg-subtle) transition group"
                   >
                     <div
                       className="cursor-pointer"
@@ -207,7 +207,7 @@ export const ContentsDrawer: React.FC<ContentsDrawerProps> = ({
                       }}
                     >
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-[11px] font-semibold text-blue-600 truncate">
+                        <span className="text-[11px] font-semibold text-[#ff003d] truncate">
                           {hl.chapterTitle || `Section ${hl.sectionIndex + 1}`}
                         </span>
                         <div
@@ -222,27 +222,22 @@ export const ContentsDrawer: React.FC<ContentsDrawerProps> = ({
                           }`}
                         />
                       </div>
-
-                      <p className="text-xs font-serif italic text-(--text-primary) line-clamp-3 mb-2">
+                      <blockquote className="text-xs italic line-clamp-3 text-(--text-primary) border-l-2 border-[#ff003d] pl-2 my-1">
                         "{hl.text}"
-                      </p>
-
+                      </blockquote>
                       {hl.note && (
-                        <div className="flex items-start gap-1.5 p-2 rounded-lg bg-(--bg-surface) border border-(--border-color)/60 mb-2">
-                          <MessageSquare className="w-3.5 h-3.5 text-blue-500 shrink-0 mt-0.5" />
-                          <span className="text-xs text-(--text-secondary)">{hl.note}</span>
+                        <div className="text-xs text-(--text-secondary) mt-1.5 flex items-start gap-1 bg-(--bg-surface) p-2 rounded-xl border border-(--c-grey-line)">
+                          <MessageSquare className="w-3.5 h-3.5 mt-0.5 text-[#ff003d] shrink-0" />
+                          <span>{hl.note}</span>
                         </div>
                       )}
                     </div>
 
-                    <div className="flex items-center justify-between pt-2 border-t border-(--border-color)/50 text-[10px] text-(--text-muted)">
+                    <div className="flex items-center justify-between text-[11px] text-(--text-muted) mt-2 pt-2 border-t border-(--c-grey-line)">
                       <span>{new Date(hl.createdAt).toLocaleDateString()}</span>
                       <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onDeleteHighlight(hl.id);
-                        }}
-                        className="p-1 text-red-500 hover:bg-red-50/20 rounded transition"
+                        onClick={() => onDeleteHighlight(hl.id)}
+                        className="p-1 rounded text-red-500 hover:bg-red-500/10 transition"
                         title="Delete highlight"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -256,20 +251,20 @@ export const ContentsDrawer: React.FC<ContentsDrawerProps> = ({
 
           {/* Bookmarks Tab */}
           {activeTab === 'bookmarks' && (
-            <div className="space-y-2">
+            <div className="space-y-3">
               {bookmarks.length === 0 ? (
                 <div className="p-8 text-center text-sm text-(--text-muted) space-y-3">
-                  <BookmarkIcon className="w-8 h-8 mx-auto opacity-30" />
-                  <p>No bookmarks yet.</p>
+                  <BookmarkIcon className="w-8 h-8 mx-auto opacity-30 text-[#ff003d]" />
+                  <p className="font-display font-bold">No bookmarks saved.</p>
                   <p className="text-xs">
-                    Tap the ribbon icon in the top right while reading to bookmark any page.
+                    Tap the ribbon in the top right corner of any page to bookmark your exact spot.
                   </p>
                 </div>
               ) : (
                 bookmarks.map((bm) => (
                   <div
                     key={bm.id}
-                    className="p-3 rounded-xl border border-(--border-color) bg-(--bg-subtle)/40 hover:bg-(--bg-subtle) transition group"
+                    className="p-3.5 rounded-2xl border border-(--c-grey-line) bg-(--bg-subtle)/40 hover:bg-(--bg-subtle) transition group"
                   >
                     <div
                       className="cursor-pointer"
@@ -279,26 +274,24 @@ export const ContentsDrawer: React.FC<ContentsDrawerProps> = ({
                       }}
                     >
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs font-semibold text-blue-600 truncate">
+                        <span className="font-display font-bold text-xs text-(--c-ink)">
                           {bm.chapterTitle || `Section ${bm.sectionIndex + 1}`}
                         </span>
-                        <span className="text-[10px] text-(--text-muted)">
+                        <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#ff003d]/10 text-[#ff003d]">
                           {Math.round(bm.percentage)}%
                         </span>
                       </div>
-                      <p className="text-xs font-serif italic text-(--text-secondary) line-clamp-2 mb-2">
-                        "{bm.textSnippet || 'Bookmarked location'}"
+                      <p className="text-xs text-(--text-secondary) line-clamp-2 mt-1">
+                        "{bm.textSnippet}"
                       </p>
                     </div>
-                    <div className="flex items-center justify-between pt-2 border-t border-(--border-color)/50 text-[10px] text-(--text-muted)">
+
+                    <div className="flex items-center justify-between text-[11px] text-(--text-muted) mt-2 pt-2 border-t border-(--c-grey-line)">
                       <span>{new Date(bm.createdAt).toLocaleDateString()}</span>
                       <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onDeleteBookmark(bm.id);
-                        }}
-                        className="p-1 text-red-500 hover:bg-red-50/20 rounded transition"
-                        title="Remove bookmark"
+                        onClick={() => onDeleteBookmark(bm.id)}
+                        className="p-1 rounded text-red-500 hover:bg-red-500/10 transition"
+                        title="Delete bookmark"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -309,49 +302,52 @@ export const ContentsDrawer: React.FC<ContentsDrawerProps> = ({
             </div>
           )}
 
-          {/* Book Info & Stats */}
+          {/* Statistics Tab */}
           {activeTab === 'info' && (
-            <div className="p-3 space-y-4">
-              <div className="p-4 rounded-xl border border-(--border-color) bg-(--bg-subtle)/40 space-y-3">
-                <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-(--text-muted)">
-                  <Clock className="w-3.5 h-3.5" />
-                  <span>Reading Progress</span>
+            <div className="space-y-4 p-2 text-xs">
+              <div className="p-4 rounded-2xl bg-(--bg-subtle)/70 border border-(--c-grey-line) space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-(--text-muted)">Overall Progress</span>
+                  <span className="font-mono font-bold text-sm text-[#ff003d]">
+                    {Math.round(currentOverallPercentage)}%
+                  </span>
                 </div>
-                <div>
-                  <div className="text-2xl font-bold font-serif">{Math.round(currentOverallPercentage)}%</div>
-                  <div className="w-full bg-(--progress-track) h-1.5 rounded-full overflow-hidden mt-1.5">
-                    <div
-                      className="bg-blue-600 h-full rounded-full transition-all duration-300"
-                      style={{ width: `${Math.min(100, Math.max(0, currentOverallPercentage))}%` }}
-                    />
-                  </div>
+                <div className="w-full bg-(--c-grey-line) h-2 rounded-full overflow-hidden">
+                  <div
+                    className="bg-[#ff003d] h-full rounded-full transition-all duration-300"
+                    style={{ width: `${Math.round(currentOverallPercentage)}%` }}
+                  />
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-2 text-xs">
-                <div className="p-3 rounded-lg border border-(--border-color) bg-(--bg-subtle)/30">
-                  <div className="text-(--text-muted)">Total Pages</div>
-                  <div className="text-base font-semibold mt-0.5">{book.metadata.pageCount}</div>
-                </div>
-                <div className="p-3 rounded-lg border border-(--border-color) bg-(--bg-subtle)/30">
-                  <div className="text-(--text-muted)">Word Count</div>
-                  <div className="text-base font-semibold mt-0.5">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="p-3.5 rounded-2xl bg-(--bg-subtle)/40 border border-(--c-grey-line)">
+                  <span className="text-(--text-muted) block mb-1">Total Words</span>
+                  <span className="font-display font-bold text-lg text-(--c-ink)">
                     {book.metadata.totalWords.toLocaleString()}
-                  </div>
+                  </span>
                 </div>
-                <div className="p-3 rounded-lg border border-(--border-color) bg-(--bg-subtle)/30">
-                  <div className="text-(--text-muted)">Sections</div>
-                  <div className="text-base font-semibold mt-0.5">{book.metadata.sectionCount}</div>
-                </div>
-                <div className="p-3 rounded-lg border border-(--border-color) bg-(--bg-subtle)/30">
-                  <div className="text-(--text-muted)">Est. Reading Time</div>
-                  <div className="text-base font-semibold mt-0.5">{estimatedTotalMinutes} min</div>
+                <div className="p-3.5 rounded-2xl bg-(--bg-subtle)/40 border border-(--c-grey-line)">
+                  <span className="text-(--text-muted) block mb-1">Read Time</span>
+                  <span className="font-display font-bold text-lg text-(--c-ink)">
+                    ~{estimatedTotalMinutes} mins
+                  </span>
                 </div>
               </div>
 
-              <div className="p-3 rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs">
-                <span className="font-semibold block mb-0.5">100% Client-Side Privacy</span>
-                All highlights, notes, and parsed content remain strictly on your local device.
+              <div className="p-4 rounded-2xl bg-(--bg-subtle)/40 border border-(--c-grey-line) space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-(--text-muted)">Document Format</span>
+                  <span className="font-semibold">PDF Reflow 2.0</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-(--text-muted)">Sections</span>
+                  <span className="font-semibold">{book.sections.length}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-(--text-muted)">Total Pages</span>
+                  <span className="font-semibold">{book.metadata.pageCount}</span>
+                </div>
               </div>
             </div>
           )}
