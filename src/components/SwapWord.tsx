@@ -3,15 +3,21 @@ import React, { useState, useEffect } from 'react';
 interface SwapWordProps {
   word: string;
   className?: string;
+  outgoingClassName?: string;
+  incomingClassName?: string;
   staggerMs?: number;
   autoRoll?: boolean;
+  groupHover?: boolean;
 }
 
 export const SwapWord: React.FC<SwapWordProps> = ({
   word,
   className = '',
+  outgoingClassName = '',
+  incomingClassName = '',
   staggerMs = 35,
   autoRoll = true,
+  groupHover = false,
 }) => {
   const [swappedIndices, setSwappedIndices] = useState<Set<number>>(new Set());
 
@@ -59,6 +65,8 @@ export const SwapWord: React.FC<SwapWordProps> = ({
           return <span key={idx} className="inline-block w-[0.28em]">&nbsp;</span>;
         }
 
+        const delay = `${idx * staggerMs}ms`;
+
         return (
           <span
             key={idx}
@@ -66,10 +74,12 @@ export const SwapWord: React.FC<SwapWordProps> = ({
           >
             {/* Outgoing character */}
             <span
-              className="block transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+              className={`block transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                groupHover ? 'group-hover:-translate-y-[110%]' : ''
+              } ${outgoingClassName}`}
               style={{
-                transform: isSwapped ? 'translateY(-110%)' : 'translateY(0%)',
-                transitionDelay: `${idx * staggerMs}ms`,
+                transform: isSwapped ? 'translateY(-110%)' : undefined,
+                transitionDelay: delay,
               }}
             >
               {char}
@@ -78,10 +88,15 @@ export const SwapWord: React.FC<SwapWordProps> = ({
             {/* Incoming character from below */}
             <span
               aria-hidden="true"
-              className="block absolute top-0 left-0 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+              className={`block absolute top-0 left-0 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                groupHover
+                  ? 'translate-y-[110%] group-hover:translate-y-0'
+                  : isSwapped
+                  ? 'translate-y-0'
+                  : 'translate-y-[110%]'
+              } ${incomingClassName}`}
               style={{
-                transform: isSwapped ? 'translateY(0%)' : 'translateY(110%)',
-                transitionDelay: `${idx * staggerMs}ms`,
+                transitionDelay: delay,
               }}
             >
               {char}

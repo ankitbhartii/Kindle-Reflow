@@ -330,7 +330,14 @@ export const HeroCoins: React.FC<{ onCoinClick?: () => void }> = ({ onCoinClick 
     const S = 1000 / 60; // 16.6667ms
     const zGravity = () => engine.gravity.y * engine.gravity.scale; // 0.0024 px/ms^2
 
-    const coinRadius = 34;
+    const getResponsiveCoinRadius = (w: number) => {
+      if (w < 440) return 21; // Small phones (iPhone SE, compact Androids)
+      if (w < 640) return 24; // Standard phones (iPhone 14/15/16, Pixel)
+      if (w < 1024) return 28; // Tablets (iPad Mini, iPad Air, Galaxy Tab)
+      return 34; // Laptops & Desktops
+    };
+
+    let coinRadius = getResponsiveCoinRadius(width);
     // Exactly as seen in official Awake site: keep only 4-5 total coins on screen!
     const maxCoins = 5;
     let coins: CoinItem[] = [];
@@ -799,11 +806,19 @@ export const HeroCoins: React.FC<{ onCoinClick?: () => void }> = ({ onCoinClick 
     dom.addEventListener('pointerdown', handlePointerDown);
     window.addEventListener('pointermove', handlePointerMove);
     window.addEventListener('pointerup', handlePointerUp);
-
     const handleResize = () => {
       if (!container) return;
       width = container.clientWidth || 1200;
       height = container.clientHeight || 750;
+      const newRadius = getResponsiveCoinRadius(width);
+      if (newRadius !== coinRadius) {
+        const factor = newRadius / coinRadius;
+        coinRadius = newRadius;
+        for (const c of coins) {
+          c.radius = newRadius;
+          Matter.Body.scale(c.body, factor, factor);
+        }
+      }
       renderer.setSize(width, height);
       updateCameraDistance();
       dirLight.position.set(0.93 * width, 0.18 * height, 0.32 * width);
@@ -811,7 +826,12 @@ export const HeroCoins: React.FC<{ onCoinClick?: () => void }> = ({ onCoinClick 
       rebuildSolids();
     };
 
+    const handleOrientation = () => {
+      setTimeout(handleResize, 150);
+    };
+
     window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleOrientation);
 
     // Main Simulation Loop
     let animId: number;
@@ -990,6 +1010,7 @@ export const HeroCoins: React.FC<{ onCoinClick?: () => void }> = ({ onCoinClick 
       window.removeEventListener('pointermove', handlePointerMove);
       window.removeEventListener('pointerup', handlePointerUp);
       window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleOrientation);
       renderer.dispose();
       Matter.Engine.clear(engine);
       if (container.contains(dom)) {
@@ -1001,8 +1022,8 @@ export const HeroCoins: React.FC<{ onCoinClick?: () => void }> = ({ onCoinClick 
   return (
     <div
       ref={containerRef}
-      className="absolute inset-0 w-full h-full overflow-hidden pointer-events-auto"
-      style={{ zIndex: 5 }}
+      className="absolute inset-0 w-full h-full overflow-hidden pointer-events-auto select-none touch-none"
+      style={{ zIndex: 5, touchAction: 'none' }}
       aria-hidden="true"
     />
   );
