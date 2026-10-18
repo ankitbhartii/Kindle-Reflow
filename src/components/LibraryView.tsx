@@ -144,12 +144,12 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
         <HeroCoins onCoinClick={() => fileInputRef.current?.click()} />
 
         {/* Top Navbar inside Red Card */}
-        <header className="relative z-20 flex items-center justify-between w-full pointer-events-auto gap-2">
+        <header className="relative z-30 flex items-center justify-between w-full pointer-events-auto gap-2 shrink-0">
           {/* Logo with Character Roll on Hover */}
-          <div className="flex items-center min-w-0">
+          <div className="flex items-center min-w-0 shrink-0">
             <a
               href="/"
-              className="font-display font-medium text-[1.35rem] sm:text-[1.65rem] lg:text-[1.9rem] tracking-tight text-white select-none cursor-pointer leading-none truncate"
+              className="font-display font-medium text-[1.15rem] sm:text-[1.65rem] lg:text-[1.9rem] tracking-tight text-white select-none cursor-pointer leading-none truncate"
             >
               <SwapWord word="Kindle-Reflow" className="font-medium" />
             </a>
@@ -160,9 +160,9 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
             {/* Primary Hero CTA: Open PDF with color-changing text roll animation */}
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="awake-pill group relative px-3 sm:px-5 py-1.5 sm:py-2.5 text-xs sm:text-sm font-bold bg-white hover:bg-[#161d25] text-[#ff003d] hover:text-white hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 shadow-lg flex items-center gap-1.5 sm:gap-2 cursor-pointer"
+              className="awake-pill group relative px-2.5 sm:px-5 py-1.5 sm:py-2.5 text-[11px] sm:text-sm font-bold bg-white hover:bg-[#161d25] text-[#ff003d] hover:text-white hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 shadow-lg flex items-center gap-1.5 sm:gap-2 cursor-pointer shrink-0"
             >
-              <Upload className="w-3.5 h-3.5 text-[#ff003d] group-hover:text-white group-hover:-translate-y-0.5 transition-all duration-300 shrink-0" />
+              <Upload className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#ff003d] group-hover:text-white group-hover:-translate-y-0.5 transition-all duration-300 shrink-0" />
               <SwapWord
                 word="open pdf."
                 outgoingClassName="text-[#ff003d]"
@@ -176,7 +176,7 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
             {/* Read Classic Sample Pill (Visible on tablet & desktop) */}
             <button
               onClick={onOpenSampleBook}
-              className="awake-pill group hidden md:inline-flex px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium bg-white/20 hover:bg-white border border-white/40 hover:border-white text-white hover:text-[#ff003d] backdrop-blur-xs hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 shadow-xs items-center gap-1.5 cursor-pointer"
+              className="awake-pill group hidden md:inline-flex px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium bg-white/20 hover:bg-white border border-white/40 hover:border-white text-white hover:text-[#ff003d] backdrop-blur-xs hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 shadow-xs items-center gap-1.5 cursor-pointer shrink-0"
             >
               <BookOpen className="w-3.5 h-3.5 text-white group-hover:text-[#ff003d] transition-colors duration-300 shrink-0" />
               <SwapWord
@@ -191,7 +191,7 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
             {/* Awake Signature Menu Pill with color-changing text roll animation */}
             <button
               onClick={() => setIsMenuOpen(true)}
-              className="awake-pill group px-3 sm:px-4 py-1.5 sm:py-2.5 bg-white/20 hover:bg-white border border-white/30 hover:border-white text-white hover:text-[#ff003d] transition-all duration-300 shadow-xs flex items-center gap-2 sm:gap-2.5 font-medium text-xs sm:text-sm cursor-pointer"
+              className="awake-pill group px-2.5 sm:px-4 py-1.5 sm:py-2.5 bg-white/20 hover:bg-white border border-white/30 hover:border-white text-white hover:text-[#ff003d] transition-all duration-300 shadow-xs flex items-center gap-1.5 sm:gap-2.5 font-medium text-[11px] sm:text-sm cursor-pointer shrink-0"
               aria-label="Open menu"
             >
               <SwapWord
@@ -201,7 +201,7 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
                 groupHover
                 autoRoll={false}
               />
-              <div className="flex flex-col gap-1 w-3 sm:w-3.5 items-end overflow-hidden py-0.5">
+              <div className="flex flex-col gap-0.5 sm:gap-1 w-3 sm:w-3.5 items-end overflow-hidden py-0.5">
                 <span className="burger-line-1 block h-[1.5px] w-3 sm:w-3.5 bg-white group-hover:bg-[#ff003d] rounded-full transition-colors duration-300" />
                 <span className="burger-line-2 block h-[1.5px] w-2 group-hover:w-3 sm:group-hover:w-3.5 transition-all duration-300 bg-white group-hover:bg-[#ff003d] rounded-full" />
                 <span className="burger-line-3 block h-[1.5px] w-2.5 sm:w-3 group-hover:w-3 sm:group-hover:w-3.5 transition-all duration-300 bg-white group-hover:bg-[#ff003d] rounded-full" />
@@ -211,37 +211,37 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
         </header>
 
         {/* Big Split Headline Text: Fluid & Responsive across Mobile, Tablet, Laptop */}
-        <div className="relative z-20 my-auto py-3 sm:py-8 lg:py-10 pointer-events-none select-none w-full">
+        <div className="relative z-10 my-auto py-2 sm:py-6 lg:py-8 pointer-events-none select-none w-full">
           <div className="space-y-1 sm:space-y-2 lg:space-y-3 pointer-events-auto w-full">
             {/* Line 1: WE ............... REFLOW */}
-            <div className="font-display font-medium uppercase text-[clamp(1.85rem,6.2vw,7.2rem)] leading-[0.98] tracking-[-0.015em] text-white flex justify-between items-baseline w-full" data-coins-above="">
+            <div className="font-display font-medium uppercase text-[clamp(1.4rem,5.2vw,7.2rem)] leading-[0.98] tracking-[-0.015em] text-white flex justify-between items-baseline w-full" data-coins-above="">
               <span data-coin-step="1"><SwapWord word="WE" /></span>
               <SwapWord word="REFLOW" />
             </div>
 
             {/* Line 2: BOOKS ............... PEOPLE */}
-            <div className="font-display font-medium uppercase text-[clamp(1.85rem,6.2vw,7.2rem)] leading-[0.98] tracking-[-0.015em] text-white flex justify-between items-baseline w-full" data-coins-above="">
+            <div className="font-display font-medium uppercase text-[clamp(1.4rem,5.2vw,7.2rem)] leading-[0.98] tracking-[-0.015em] text-white flex justify-between items-baseline w-full" data-coins-above="">
               <span data-coin-step="2"><SwapWord word="BOOKS" /></span>
               <SwapWord word="PEOPLE" />
             </div>
 
             {/* Line 3: REMEMBER. ............... Kicker Paragraph + Action Buttons */}
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between w-full gap-3 sm:gap-6 pt-0.5 sm:pt-1">
-              <div className="font-display font-medium uppercase text-[clamp(1.85rem,6.2vw,7.2rem)] leading-[0.98] tracking-[-0.015em] text-white" data-coins-above="">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between w-full gap-2 sm:gap-4 md:gap-6 pt-0.5 sm:pt-1">
+              <div className="font-display font-medium uppercase text-[clamp(1.4rem,5.2vw,7.2rem)] leading-[0.98] tracking-[-0.015em] text-white" data-coins-above="">
                 <span data-coin-step="3"><SwapWord word="REMEMBER." /></span>
               </div>
 
               {/* PDF Reader Kicker Paragraph + Direct Action Buttons with color-changing roll animation */}
-              <div className="pointer-events-auto text-left max-w-[340px] sm:max-w-[360px] sm:mb-2 space-y-2.5 sm:space-y-3" data-coins-kicker="">
-                <p className="font-body-sans normal-case text-[11px] sm:text-[13px] font-normal text-white/90 leading-[1.55] sm:leading-[1.65] tracking-normal">
+              <div className="pointer-events-auto text-left max-w-full sm:max-w-[340px] md:max-w-[360px] sm:mb-2 space-y-1.5 sm:space-y-3" data-coins-kicker="">
+                <p className="font-body-sans normal-case text-[10px] sm:text-[13px] font-normal text-white/90 leading-[1.45] sm:leading-[1.65] tracking-normal">
                   Kindle Reflow transforms static, fixed-page PDFs into fluid, responsive books. Enjoy Bookerly typography, two-page hardcover spreads, built-in offline dictionary, and zero zoom fatigue.
                 </p>
-                <div className="flex flex-wrap items-center gap-2 pt-0.5 sm:gap-2.5">
+                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2.5 pt-0.5">
                   <button
                     onClick={() => fileInputRef.current?.click()}
-                    className="awake-pill group px-3.5 sm:px-4 py-1.5 sm:py-2 bg-white hover:bg-[#161d25] text-[#ff003d] hover:text-white font-bold text-xs tracking-wider uppercase hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 shadow-md flex items-center gap-1.5 sm:gap-2 cursor-pointer"
+                    className="awake-pill group px-3 sm:px-4 py-1.5 sm:py-2 bg-white hover:bg-[#161d25] text-[#ff003d] hover:text-white font-bold text-[10px] sm:text-xs tracking-wider uppercase hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 shadow-md flex items-center gap-1.5 sm:gap-2 cursor-pointer"
                   >
-                    <Upload className="w-3.5 h-3.5 text-[#ff003d] group-hover:text-white group-hover:-translate-y-0.5 transition-all duration-300" />
+                    <Upload className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#ff003d] group-hover:text-white group-hover:-translate-y-0.5 transition-all duration-300" />
                     <SwapWord
                       word="Upload PDF"
                       outgoingClassName="text-[#ff003d]"
@@ -252,9 +252,9 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
                   </button>
                   <button
                     onClick={onOpenSampleBook}
-                    className="awake-pill group px-3 sm:px-3.5 py-1.5 sm:py-2 bg-white/20 hover:bg-white border border-white/40 hover:border-white text-white hover:text-[#ff003d] font-medium text-xs tracking-wider uppercase hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center gap-1.5 cursor-pointer"
+                    className="awake-pill group px-3 sm:px-3.5 py-1.5 sm:py-2 bg-white/20 hover:bg-white border border-white/40 hover:border-white text-white hover:text-[#ff003d] font-medium text-[10px] sm:text-xs tracking-wider uppercase hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center gap-1.5 cursor-pointer"
                   >
-                    <BookOpen className="w-3.5 h-3.5 text-white group-hover:text-[#ff003d] transition-colors duration-300" />
+                    <BookOpen className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-white group-hover:text-[#ff003d] transition-colors duration-300" />
                     <SwapWord
                       word="Try Classic"
                       outgoingClassName="text-white"
@@ -270,7 +270,7 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
         </div>
 
         {/* Bottom Metadata Bar inside Red Card: Responsive on all screens */}
-        <div data-coins-floor="" className="relative z-20 pt-2.5 sm:pt-4 border-t border-white/20 flex flex-col sm:flex-row sm:items-center justify-between text-[10px] sm:text-xs uppercase tracking-wider text-white font-medium gap-1 sm:gap-2 pointer-events-auto">
+        <div data-coins-floor="" className="relative z-30 pt-2 sm:pt-4 border-t border-white/20 flex flex-col sm:flex-row sm:items-center justify-between text-[9px] sm:text-xs uppercase tracking-wider text-white font-medium gap-1 sm:gap-2 pointer-events-auto shrink-0">
           <div className="flex items-center gap-1.5 sm:gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping shrink-0" />
             <span className="opacity-75">QUICK START:</span>
