@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { HighlightColor } from '../types/reader';
-import { Edit3, Copy, Pin, Share2, Check } from 'lucide-react';
+import { Edit3, Copy, Pin, Share2, Check, Sparkles } from 'lucide-react';
 
 interface TextSelectionToolbarProps {
   position: { x: number; y: number } | null;
@@ -69,10 +69,10 @@ export const TextSelectionToolbar: React.FC<TextSelectionToolbarProps> = ({
       }}
       onClick={(e) => e.stopPropagation()}
     >
-      <div className="bg-(--bg-surface) text-(--text-primary) border border-(--border-color) shadow-2xl rounded-2xl p-2 flex flex-col items-center gap-1.5 backdrop-blur-md">
+      <div className="bg-(--bg-surface) text-(--text-primary) border border-(--c-grey-line) shadow-2xl rounded-full p-1.5 flex flex-col items-center gap-1 backdrop-blur-md">
         {/* Color Palette Row if open */}
         {showColorPicker && (
-          <div className="flex items-center gap-2 pb-2 mb-1 border-b border-(--border-color) w-full justify-center">
+          <div className="flex items-center gap-2 px-3 py-1.5 mb-1 border-b border-(--c-grey-line) w-full justify-center">
             {colors.map((c) => (
               <button
                 key={c.id}
@@ -90,8 +90,8 @@ export const TextSelectionToolbar: React.FC<TextSelectionToolbarProps> = ({
           </div>
         )}
 
-        {/* Action Buttons Row matching Kindle exactly */}
-        <div className="flex items-center gap-1 sm:gap-2">
+        {/* Action Buttons Row with Awake Pill Design */}
+        <div className="flex items-center gap-1">
           {/* Highlight */}
           <button
             onClick={() => {
@@ -99,73 +99,60 @@ export const TextSelectionToolbar: React.FC<TextSelectionToolbarProps> = ({
                 onHighlight(activeColor);
                 setShowColorPicker(false);
               } else {
-                onHighlight(activeColor);
+                setShowColorPicker(true);
               }
             }}
-            onContextMenu={(e) => {
-              e.preventDefault();
-              setShowColorPicker((v) => !v);
-            }}
-            className="flex flex-col items-center gap-1 px-3 py-2 rounded-xl hover:bg-(--bg-subtle) transition text-xs font-medium"
+            className={`awake-pill px-3 py-1.5 text-xs font-semibold rounded-full transition flex items-center gap-1.5 ${
+              showColorPicker ? 'bg-[#ff003d] text-white' : 'hover:bg-(--bg-subtle) text-(--text-primary)'
+            }`}
           >
-            <div
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowColorPicker((v) => !v);
-              }}
-              className={`w-5 h-5 rounded-full ${
-                activeColor === 'teal'
-                  ? 'bg-teal-400'
-                  : activeColor === 'yellow'
-                  ? 'bg-amber-300'
-                  : activeColor === 'pink'
-                  ? 'bg-pink-400'
-                  : 'bg-orange-400'
-              } shadow-xs cursor-pointer hover:scale-110 transition-transform`}
-            />
-            <span className="text-[11px] text-(--text-secondary)">Highlight</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-teal-400 border border-black/20" />
+            <span>Highlight</span>
           </button>
 
           {/* Note */}
           <button
             onClick={onAddNote}
-            className="flex flex-col items-center gap-1 px-3 py-2 rounded-xl hover:bg-(--bg-subtle) transition text-xs font-medium"
+            className="awake-pill px-3 py-1.5 text-xs font-semibold rounded-full hover:bg-(--bg-subtle) text-(--text-primary) transition flex items-center gap-1.5"
           >
-            <Edit3 className="w-5 h-5 text-(--text-secondary)" />
-            <span className="text-[11px] text-(--text-secondary)">Note</span>
+            <Edit3 className="w-3.5 h-3.5 text-[#ff003d]" />
+            <span>Note</span>
           </button>
 
           {/* Copy */}
           <button
             onClick={handleCopy}
-            className="flex flex-col items-center gap-1 px-3 py-2 rounded-xl hover:bg-(--bg-subtle) transition text-xs font-medium"
+            className="awake-pill px-3 py-1.5 text-xs font-semibold rounded-full hover:bg-(--bg-subtle) text-(--text-primary) transition flex items-center gap-1.5"
           >
             {copied ? (
-              <Check className="w-5 h-5 text-emerald-600" />
+              <>
+                <Check className="w-3.5 h-3.5 text-emerald-500" />
+                <span className="text-emerald-500 font-bold">Copied</span>
+              </>
             ) : (
-              <Copy className="w-5 h-5 text-(--text-secondary)" />
+              <>
+                <Copy className="w-3.5 h-3.5 text-(--text-secondary)" />
+                <span>Copy</span>
+              </>
             )}
-            <span className="text-[11px] text-(--text-secondary)">
-              {copied ? 'Copied' : 'Copy'}
-            </span>
           </button>
 
           {/* Pin */}
           <button
             onClick={onPin}
-            className="flex flex-col items-center gap-1 px-3 py-2 rounded-xl hover:bg-(--bg-subtle) transition text-xs font-medium"
+            className="awake-pill p-2 rounded-full hover:bg-(--bg-subtle) text-(--text-secondary) hover:text-[#ff003d] transition"
+            title="Pin snippet"
           >
-            <Pin className="w-5 h-5 text-(--text-secondary)" />
-            <span className="text-[11px] text-(--text-secondary)">Pin</span>
+            <Pin className="w-3.5 h-3.5" />
           </button>
 
           {/* Share */}
           <button
             onClick={handleShare}
-            className="flex flex-col items-center gap-1 px-3 py-2 rounded-xl hover:bg-(--bg-subtle) transition text-xs font-medium"
+            className="awake-pill p-2 rounded-full hover:bg-(--bg-subtle) text-(--text-secondary) hover:text-[#ff003d] transition"
+            title="Share quote"
           >
-            <Share2 className="w-5 h-5 text-(--text-secondary)" />
-            <span className="text-[11px] text-(--text-secondary)">Share</span>
+            <Share2 className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>

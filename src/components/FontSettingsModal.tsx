@@ -1,10 +1,10 @@
+import React from 'react';
 import {
   ReadingSettings,
   ThemeMode,
   FontFamily,
   LineHeightSize,
   MarginSize,
-  TextAlign,
 } from '../types/reader';
 import { X, Minus, Plus, Sun, Moon, Coffee, Columns, Square, AlignLeft, AlignJustify } from 'lucide-react';
 
@@ -26,14 +26,14 @@ export const FontSettingsModal: React.FC<FontSettingsModalProps> = ({
   const fontOptions: { id: FontFamily; label: string; sample: string }[] = [
     { id: 'bookerly', label: 'Bookerly', sample: 'Literata' },
     { id: 'serif', label: 'Merriweather', sample: 'Serif' },
-    { id: 'sans', label: 'Amazon Ember', sample: 'Sans' },
+    { id: 'sans', label: 'Plus Jakarta', sample: 'Grotesk' },
     { id: 'mono', label: 'JetBrains', sample: 'Mono' },
   ];
 
   const themeOptions: { id: ThemeMode; label: string; icon: React.ReactNode; bg: string; text: string; border: string }[] = [
     {
       id: 'light',
-      label: 'Light',
+      label: 'Day Light',
       icon: <Sun className="w-4 h-4 text-amber-600" />,
       bg: 'bg-[#fcfbf9]',
       text: 'text-neutral-900',
@@ -41,7 +41,7 @@ export const FontSettingsModal: React.FC<FontSettingsModalProps> = ({
     },
     {
       id: 'sepia',
-      label: 'Sepia',
+      label: 'Warm Sepia',
       icon: <Coffee className="w-4 h-4 text-amber-700" />,
       bg: 'bg-[#f5edd6]',
       text: 'text-[#382b1d]',
@@ -49,7 +49,7 @@ export const FontSettingsModal: React.FC<FontSettingsModalProps> = ({
     },
     {
       id: 'dark',
-      label: 'Dark',
+      label: 'OLED Dark',
       icon: <Moon className="w-4 h-4 text-blue-400" />,
       bg: 'bg-[#141416]',
       text: 'text-neutral-200',
@@ -63,14 +63,17 @@ export const FontSettingsModal: React.FC<FontSettingsModalProps> = ({
       onClick={onClose}
     >
       <div
-        className="w-full sm:max-w-md bg-(--bg-surface) text-(--text-primary) border-t sm:border border-(--border-color) sm:rounded-2xl shadow-2xl p-6 sm:p-7 max-h-[88vh] overflow-y-auto no-scrollbar transition-transform"
+        className="w-full sm:max-w-md bg-(--bg-surface) text-(--text-primary) border-t sm:border border-(--c-grey-line) sm:rounded-[2rem] shadow-2xl p-6 sm:p-8 max-h-[88vh] overflow-y-auto no-scrollbar transition-transform"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-(--border-color)">
-          <div className="flex items-center gap-2">
-            <span className="font-serif text-xl font-bold tracking-tight">Aa</span>
-            <h3 className="text-base font-semibold">Reading Appearance</h3>
+        <div className="flex items-center justify-between pb-4 border-b border-(--c-grey-line)">
+          <div className="flex items-center gap-2.5">
+            <span className="font-display text-2xl font-black text-[#ff003d]">Aa</span>
+            <div>
+              <h3 className="font-display font-bold text-base text-(--c-ink)">Typography & Layout</h3>
+              <p className="text-[10px] uppercase tracking-wider text-(--text-muted) font-semibold">Awake Customizer</p>
+            </div>
           </div>
           <button
             onClick={onClose}
@@ -82,20 +85,22 @@ export const FontSettingsModal: React.FC<FontSettingsModalProps> = ({
         </div>
 
         {/* Font Size */}
-        <div className="py-4 border-b border-(--border-color)">
+        <div className="py-4 border-b border-(--c-grey-line)">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-(--text-secondary)">Font Size</span>
-            <span className="text-sm font-semibold">{settings.fontSize}px</span>
+            <span className="text-xs uppercase tracking-wider font-semibold text-(--text-muted)">Font Size</span>
+            <span className="text-xs font-mono font-bold text-(--c-ink) px-2 py-0.5 rounded-full bg-(--bg-subtle)">
+              {settings.fontSize}px
+            </span>
           </div>
           <div className="flex items-center gap-3">
             <button
               onClick={() => onUpdateSettings({ fontSize: Math.max(12, settings.fontSize - 1) })}
               disabled={settings.fontSize <= 12}
-              className="flex-1 py-2.5 px-3 rounded-lg border border-(--border-color) bg-(--bg-subtle) hover:opacity-90 disabled:opacity-40 flex items-center justify-center gap-2 transition"
+              className="awake-pill flex-1 py-2 px-3 border border-(--c-grey-line) bg-(--bg-subtle) hover:bg-(--c-grey-panel) disabled:opacity-40 flex items-center justify-center gap-1.5 transition"
               aria-label="Decrease font size"
             >
-              <Minus className="w-4 h-4" />
-              <span className="text-xs font-serif font-medium">A</span>
+              <Minus className="w-3.5 h-3.5" />
+              <span className="text-xs font-display font-bold">Small</span>
             </button>
             <div className="flex-2 flex items-center justify-center">
               <input
@@ -104,24 +109,24 @@ export const FontSettingsModal: React.FC<FontSettingsModalProps> = ({
                 max="32"
                 value={settings.fontSize}
                 onChange={(e) => onUpdateSettings({ fontSize: Number(e.target.value) })}
-                className="w-full accent-blue-600 h-1.5 bg-(--bg-subtle) rounded-lg cursor-pointer"
+                className="w-full accent-[#ff003d] h-1.5 bg-(--c-grey-line) rounded-lg cursor-pointer"
               />
             </div>
             <button
               onClick={() => onUpdateSettings({ fontSize: Math.min(32, settings.fontSize + 1) })}
               disabled={settings.fontSize >= 32}
-              className="flex-1 py-2.5 px-3 rounded-lg border border-(--border-color) bg-(--bg-subtle) hover:opacity-90 disabled:opacity-40 flex items-center justify-center gap-2 transition"
+              className="awake-pill flex-1 py-2 px-3 border border-(--c-grey-line) bg-(--bg-subtle) hover:bg-(--c-grey-panel) disabled:opacity-40 flex items-center justify-center gap-1.5 transition"
               aria-label="Increase font size"
             >
-              <Plus className="w-4 h-4" />
-              <span className="text-base font-serif font-bold">A</span>
+              <Plus className="w-3.5 h-3.5" />
+              <span className="text-xs font-display font-bold">Large</span>
             </button>
           </div>
         </div>
 
         {/* Themes */}
-        <div className="py-4 border-b border-(--border-color)">
-          <span className="text-sm font-medium text-(--text-secondary) block mb-3">Theme</span>
+        <div className="py-4 border-b border-(--c-grey-line)">
+          <span className="text-xs uppercase tracking-wider font-semibold text-(--text-muted) block mb-3">Color Mode</span>
           <div className="grid grid-cols-3 gap-2.5">
             {themeOptions.map((th) => {
               const isSelected = settings.theme === th.id;
@@ -129,9 +134,9 @@ export const FontSettingsModal: React.FC<FontSettingsModalProps> = ({
                 <button
                   key={th.id}
                   onClick={() => onUpdateSettings({ theme: th.id })}
-                  className={`flex flex-col items-center justify-center gap-1.5 py-3 px-2 rounded-xl border-2 transition-all ${
+                  className={`flex flex-col items-center justify-center gap-1.5 py-3 px-2 rounded-2xl border-2 transition-all ${
                     th.bg
-                  } ${th.text} ${isSelected ? 'border-blue-600 ring-2 ring-blue-600/30 font-semibold' : th.border}`}
+                  } ${th.text} ${isSelected ? 'border-[#ff003d] ring-2 ring-[#ff003d]/20 font-bold' : th.border}`}
                 >
                   {th.icon}
                   <span className="text-xs">{th.label}</span>
@@ -142,8 +147,8 @@ export const FontSettingsModal: React.FC<FontSettingsModalProps> = ({
         </div>
 
         {/* Font Families */}
-        <div className="py-4 border-b border-(--border-color)">
-          <span className="text-sm font-medium text-(--text-secondary) block mb-3">Typeface</span>
+        <div className="py-4 border-b border-(--c-grey-line)">
+          <span className="text-xs uppercase tracking-wider font-semibold text-(--text-muted) block mb-3">Typeface</span>
           <div className="grid grid-cols-2 gap-2">
             {fontOptions.map((f) => {
               const isSelected = settings.fontFamily === f.id;
@@ -160,14 +165,14 @@ export const FontSettingsModal: React.FC<FontSettingsModalProps> = ({
                 <button
                   key={f.id}
                   onClick={() => onUpdateSettings({ fontFamily: f.id })}
-                  className={`p-2.5 text-left rounded-xl border transition-all ${
+                  className={`p-3 text-left rounded-2xl border transition-all ${
                     isSelected
-                      ? 'border-blue-600 bg-blue-50/10 font-bold'
-                      : 'border-(--border-color) hover:bg-(--bg-subtle)'
+                      ? 'border-[#ff003d] bg-[#ff003d]/5 font-bold shadow-xs'
+                      : 'border-(--c-grey-line) hover:bg-(--bg-subtle)'
                   }`}
                 >
                   <div className={`text-sm ${familyClass}`}>{f.label}</div>
-                  <div className={`text-xs text-(--text-muted) ${familyClass}`}>The quick brown fox</div>
+                  <div className={`text-[11px] text-(--text-muted) ${familyClass}`}>The quick brown fox</div>
                 </button>
               );
             })}
@@ -178,7 +183,7 @@ export const FontSettingsModal: React.FC<FontSettingsModalProps> = ({
         <div className="py-4 space-y-4">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-(--text-secondary)">Line Spacing</span>
+              <span className="text-xs uppercase tracking-wider font-semibold text-(--text-muted)">Line Spacing</span>
               <span className="text-xs text-(--text-muted) capitalize">{settings.lineHeight}</span>
             </div>
             <div className="grid grid-cols-3 gap-2">
@@ -186,10 +191,10 @@ export const FontSettingsModal: React.FC<FontSettingsModalProps> = ({
                 <button
                   key={lh}
                   onClick={() => onUpdateSettings({ lineHeight: lh })}
-                  className={`py-2 px-3 text-xs capitalize rounded-lg border transition ${
+                  className={`awake-pill py-2 px-3 text-xs capitalize transition ${
                     settings.lineHeight === lh
-                      ? 'border-blue-600 bg-blue-50/10 font-semibold text-blue-600'
-                      : 'border-(--border-color) hover:bg-(--bg-subtle)'
+                      ? 'border-2 border-[#ff003d] bg-[#ff003d]/10 font-bold text-[#ff003d]'
+                      : 'border border-(--c-grey-line) bg-(--bg-subtle) hover:bg-(--c-grey-panel) text-(--text-primary)'
                   }`}
                 >
                   {lh}
@@ -200,16 +205,16 @@ export const FontSettingsModal: React.FC<FontSettingsModalProps> = ({
 
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-(--text-secondary)">Text Alignment</span>
+              <span className="text-xs uppercase tracking-wider font-semibold text-(--text-muted)">Text Alignment</span>
               <span className="text-xs text-(--text-muted) capitalize">{settings.textAlign || 'left'}</span>
             </div>
             <div className="grid grid-cols-2 gap-2">
               <button
                 onClick={() => onUpdateSettings({ textAlign: 'left' })}
-                className={`py-2 px-3 text-xs rounded-lg border flex items-center justify-center gap-1.5 transition ${
+                className={`awake-pill py-2 px-3 text-xs flex items-center justify-center gap-1.5 transition ${
                   (settings.textAlign || 'left') === 'left'
-                    ? 'border-blue-600 bg-blue-50/10 font-semibold text-blue-600'
-                    : 'border-(--border-color) hover:bg-(--bg-subtle)'
+                    ? 'border-2 border-[#ff003d] bg-[#ff003d]/10 font-bold text-[#ff003d]'
+                    : 'border border-(--c-grey-line) bg-(--bg-subtle) hover:bg-(--c-grey-panel) text-(--text-primary)'
                 }`}
               >
                 <AlignLeft className="w-3.5 h-3.5" />
@@ -217,10 +222,10 @@ export const FontSettingsModal: React.FC<FontSettingsModalProps> = ({
               </button>
               <button
                 onClick={() => onUpdateSettings({ textAlign: 'justify' })}
-                className={`py-2 px-3 text-xs rounded-lg border flex items-center justify-center gap-1.5 transition ${
+                className={`awake-pill py-2 px-3 text-xs flex items-center justify-center gap-1.5 transition ${
                   settings.textAlign === 'justify'
-                    ? 'border-blue-600 bg-blue-50/10 font-semibold text-blue-600'
-                    : 'border-(--border-color) hover:bg-(--bg-subtle)'
+                    ? 'border-2 border-[#ff003d] bg-[#ff003d]/10 font-bold text-[#ff003d]'
+                    : 'border border-(--c-grey-line) bg-(--bg-subtle) hover:bg-(--c-grey-panel) text-(--text-primary)'
                 }`}
               >
                 <AlignJustify className="w-3.5 h-3.5" />
@@ -231,7 +236,7 @@ export const FontSettingsModal: React.FC<FontSettingsModalProps> = ({
 
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-(--text-secondary)">Margins</span>
+              <span className="text-xs uppercase tracking-wider font-semibold text-(--text-muted)">Margins</span>
               <span className="text-xs text-(--text-muted) capitalize">{settings.margin}</span>
             </div>
             <div className="grid grid-cols-3 gap-2">
@@ -239,10 +244,10 @@ export const FontSettingsModal: React.FC<FontSettingsModalProps> = ({
                 <button
                   key={m}
                   onClick={() => onUpdateSettings({ margin: m })}
-                  className={`py-2 px-3 text-xs capitalize rounded-lg border transition ${
+                  className={`awake-pill py-2 px-3 text-xs capitalize transition ${
                     settings.margin === m
-                      ? 'border-blue-600 bg-blue-50/10 font-semibold text-blue-600'
-                      : 'border-(--border-color) hover:bg-(--bg-subtle)'
+                      ? 'border-2 border-[#ff003d] bg-[#ff003d]/10 font-bold text-[#ff003d]'
+                      : 'border border-(--c-grey-line) bg-(--bg-subtle) hover:bg-(--c-grey-panel) text-(--text-primary)'
                   }`}
                 >
                   {m}
@@ -252,15 +257,15 @@ export const FontSettingsModal: React.FC<FontSettingsModalProps> = ({
           </div>
 
           {/* Desktop Two-column toggle */}
-          <div className="hidden sm:flex items-center justify-between pt-2">
+          <div className="hidden sm:flex items-center justify-between pt-3 border-t border-(--c-grey-line)">
             <div className="flex items-center gap-2">
-              {settings.twoColumnDesktop ? <Columns className="w-4 h-4 text-blue-500" /> : <Square className="w-4 h-4 text-(--text-secondary)" />}
-              <span className="text-sm font-medium text-(--text-secondary)">Two-page Spread on Desktop</span>
+              {settings.twoColumnDesktop ? <Columns className="w-4 h-4 text-[#ff003d]" /> : <Square className="w-4 h-4 text-(--text-secondary)" />}
+              <span className="text-xs font-semibold text-(--text-primary)">Two-page Spread on Desktop</span>
             </div>
             <button
               onClick={() => onUpdateSettings({ twoColumnDesktop: !settings.twoColumnDesktop })}
               className={`w-11 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors ${
-                settings.twoColumnDesktop ? 'bg-blue-600' : 'bg-(--bg-subtle) border border-(--border-color)'
+                settings.twoColumnDesktop ? 'bg-[#ff003d]' : 'bg-(--bg-subtle) border border-(--border-color)'
               }`}
             >
               <div

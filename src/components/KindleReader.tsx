@@ -19,6 +19,8 @@ import {
   Menu,
   Type,
   ArrowLeft,
+  Columns,
+  Square,
 } from 'lucide-react';
 import {
   saveReadingProgress,
@@ -537,59 +539,73 @@ export const KindleReader: React.FC<KindleReaderProps> = ({
     <div
       className={`fixed inset-0 select-text overflow-hidden flex flex-col ${themeClass} transition-colors duration-200`}
     >
-      {/* Top Header Bar */}
+      {/* Top Header Bar with Awake Floating Pill Design */}
       <header
-        className={`fixed top-0 left-0 right-0 z-40 bg-(--bg-surface)/95 backdrop-blur-md border-b border-(--border-color) transition-all duration-200 ${
-          isControlsVisible ? 'translate-y-0 opacity-100 shadow-md' : '-translate-y-full opacity-0 pointer-events-none'
+        className={`fixed top-0 left-0 right-0 z-40 px-3 sm:px-6 py-2.5 sm:py-3 transition-all duration-300 ${
+          isControlsVisible ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0 pointer-events-none'
         }`}
       >
-        <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
+        <div className="max-w-5xl mx-auto rounded-full bg-(--bg-surface)/90 backdrop-blur-md border border-(--c-grey-line) shadow-xl px-3 sm:px-5 h-12 sm:h-14 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <button
               onClick={onBackToLibrary}
-              className="flex items-center gap-1 py-1.5 px-2.5 rounded-lg text-xs font-medium hover:bg-(--bg-subtle) text-(--text-secondary) transition"
+              className="awake-pill px-3 py-1.5 rounded-full text-xs font-semibold border border-(--c-grey-line) hover:border-(--c-ink) text-(--text-primary) transition flex items-center gap-1.5"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Library</span>
             </button>
           </div>
 
           {/* Book Title & Chapter In Header */}
-          <div className="text-center min-w-0 max-w-[200px] sm:max-w-md px-2">
-            <h1 className="text-xs sm:text-sm font-semibold truncate text-(--text-primary)">
+          <div className="text-center min-w-0 max-w-[160px] sm:max-w-md px-2">
+            <h1 className="font-display font-bold text-xs sm:text-sm truncate text-(--text-primary)">
               {book.metadata.title}
             </h1>
             <p className="text-[10px] text-(--text-muted) truncate">{currentSection.title}</p>
           </div>
 
-          {/* Action Icons */}
-          <div className="flex items-center gap-1 sm:gap-2">
+          {/* Action Icons with Awake Pill Styling */}
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            {/* Desktop Two-page spread quick toggle */}
+            <button
+              onClick={() => handleUpdateSettings({ twoColumnDesktop: !settings.twoColumnDesktop })}
+              className={`awake-pill hidden md:inline-flex p-2 rounded-full border border-(--c-grey-line) transition ${
+                settings.twoColumnDesktop
+                  ? 'text-[#ff003d] border-[#ff003d] bg-[#ff003d]/10'
+                  : 'text-(--text-secondary) hover:border-(--c-ink)'
+              }`}
+              title={settings.twoColumnDesktop ? 'Switch to single page' : 'Switch to two-page spread'}
+            >
+              {settings.twoColumnDesktop ? <Columns className="w-4 h-4" /> : <Square className="w-4 h-4" />}
+            </button>
+
             <button
               onClick={handleToggleBookmark}
-              className={`p-2 rounded-lg transition ${
+              className={`awake-pill p-2 rounded-full border border-(--c-grey-line) transition ${
                 isBookmarked
-                  ? 'text-amber-500 bg-amber-50/20'
-                  : 'text-(--text-secondary) hover:bg-(--bg-subtle)'
+                  ? 'text-[#ff003d] border-[#ff003d] bg-[#ff003d]/10'
+                  : 'text-(--text-secondary) hover:border-(--c-ink)'
               }`}
               title={isBookmarked ? 'Remove bookmark' : 'Bookmark this page'}
             >
-              <BookmarkIcon className={`w-5 h-5 ${isBookmarked ? 'fill-amber-500' : ''}`} />
+              <BookmarkIcon className={`w-4 h-4 ${isBookmarked ? 'fill-[#ff003d]' : ''}`} />
             </button>
 
             <button
               onClick={() => setIsFontModalOpen(true)}
-              className="p-2 rounded-lg text-(--text-secondary) hover:bg-(--bg-subtle) transition"
+              className="awake-pill p-2 rounded-full border border-(--c-grey-line) text-(--text-secondary) hover:border-(--c-ink) transition"
               title="Typography & Theme Settings"
             >
-              <Type className="w-5 h-5" />
+              <Type className="w-4 h-4" />
             </button>
 
             <button
               onClick={() => setIsDrawerOpen(true)}
-              className="p-2 rounded-lg text-(--text-secondary) hover:bg-(--bg-subtle) transition"
+              className="awake-pill px-3 py-1.5 rounded-full border border-(--c-grey-line) text-(--text-primary) hover:border-(--c-ink) transition flex items-center gap-1.5 text-xs font-semibold"
               title="Table of Contents, Highlights & Bookmarks"
             >
-              <Menu className="w-5 h-5" />
+              <Menu className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Index</span>
             </button>
           </div>
         </div>
