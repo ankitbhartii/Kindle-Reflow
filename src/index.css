@@ -1,0 +1,136 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --reader-font-size: 18px;
+    --reader-line-height: 1.75;
+  }
+
+  body {
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    touch-action: pan-y;
+  }
+}
+
+/* Kindle Font Families */
+.font-kindle-bookerly {
+  font-family: 'Literata', 'Charter', Georgia, serif;
+}
+
+.font-kindle-serif {
+  font-family: 'Merriweather', 'Literata', Georgia, serif;
+}
+
+.font-kindle-sans {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.font-kindle-mono {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/* Theme Variations */
+.theme-light {
+  --bg-primary: #fcfbf9;
+  --bg-surface: #ffffff;
+  --bg-subtle: #f4f3ef;
+  --text-primary: #18181b;
+  --text-secondary: #52525b;
+  --text-muted: #8c8c93;
+  --border-color: #e4e4e7;
+  --accent-color: #2563eb;
+  --accent-bg: #eff6ff;
+  --progress-track: #e2e1dc;
+  --progress-fill: #18181b;
+  --selection-color: #fef08a;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.theme-sepia {
+  --bg-primary: #f5edd6;
+  --bg-surface: #ede2c5;
+  --bg-subtle: #e6dac0;
+  --text-primary: #382b1d;
+  --text-secondary: #634f3a;
+  --text-muted: #8d775f;
+  --border-color: #dfcfaf;
+  --accent-color: #854d0e;
+  --accent-bg: #fef3c7;
+  --progress-track: #dfcfaf;
+  --progress-fill: #4d3b27;
+  --selection-color: #fed7aa;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.theme-dark {
+  --bg-primary: #141416;
+  --bg-surface: #1e1e22;
+  --bg-subtle: #28282e;
+  --text-primary: #eaeaea;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+  --border-color: #2e2e36;
+  --accent-color: #60a5fa;
+  --accent-bg: #1e293b;
+  --progress-track: #2a2a30;
+  --progress-fill: #eaeaea;
+  --selection-color: #4338ca;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+/* Custom Hide Scrollbar */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Kindle page shadow effect for page spread on desktop */
+.kindle-book-shadow {
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.15), 0 0 1px 1px rgba(0, 0, 0, 0.05);
+}
+
+/* Kindle Column Reflow styling */
+.kindle-reflow-content {
+  column-fill: auto;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.kindle-reflow-content.align-justify {
+  text-align: justify;
+  text-justify: inter-word;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+}
+
+.kindle-reflow-content.align-left {
+  text-align: left;
+}
+
+.kindle-reflow-content p {
+  margin-bottom: 0.9em;
+  line-height: inherit;
+}
+
+.kindle-reflow-content h1,
+.kindle-reflow-content h2,
+.kindle-reflow-content h3 {
+  break-after: avoid;
+  break-inside: avoid;
+  text-align: center;
+  font-weight: 700;
+  margin-top: 1.25em;
+  margin-bottom: 0.75em;
+}
+
+.kindle-reflow-content blockquote {
+  break-inside: avoid;
+}
