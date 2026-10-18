@@ -86,20 +86,20 @@ export const KindleProgressScrubber: React.FC<KindleProgressScrubberProps> = ({
       {/* Persistent Kindle Reading Footer Bar with Awake Pill Design */}
       <div
         onClick={onToggle}
-        className="w-full max-w-2xl mx-auto py-2.5 px-6 flex items-center justify-between text-xs text-(--text-secondary) cursor-pointer select-none rounded-full hover:bg-(--bg-subtle)/60 transition border border-transparent hover:border-(--c-grey-line)"
+        className="w-full max-w-2xl mx-auto py-1.5 sm:py-2.5 px-3 sm:px-6 flex items-center justify-between text-xs text-(--text-secondary) cursor-pointer select-none rounded-full hover:bg-(--bg-subtle)/60 transition border border-transparent hover:border-(--c-grey-line)"
       >
-        <div className="flex items-center gap-2 truncate">
+        <div className="flex items-center gap-1.5 sm:gap-2 truncate">
           <Sliders className="w-3.5 h-3.5 shrink-0 opacity-70 text-[#ff003d]" />
-          <span className="truncate font-medium">
+          <span className="truncate font-medium text-[11px] sm:text-xs">
             Page {currentVirtualPage} of {Math.max(1, totalVirtualPages)}
           </span>
           <span className="opacity-40">•</span>
-          <span className="font-mono font-bold text-[#ff003d]">{Math.round(overallPercentage)}%</span>
+          <span className="font-mono font-bold text-[#ff003d] text-[11px] sm:text-xs">{Math.round(overallPercentage)}%</span>
         </div>
 
-        <div className="shrink-0 text-[11px] text-(--text-muted) font-medium">
+        <div className="shrink-0 text-[10px] sm:text-[11px] text-(--text-muted) font-medium">
           {estimatedMinutesLeftInChapter > 0 ? (
-            <span>{estimatedMinutesLeftInChapter} min left in chapter</span>
+            <span>{estimatedMinutesLeftInChapter} min left</span>
           ) : (
             <span>End of chapter</span>
           )}
