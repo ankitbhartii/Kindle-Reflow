@@ -237,6 +237,7 @@ export const HeroCoins: React.FC<{ onCoinClick?: () => void }> = ({ onCoinClick 
     dom.style.width = '100%';
     dom.style.height = '100%';
     dom.style.pointerEvents = 'auto';
+    dom.style.touchAction = 'pan-y';
     container.appendChild(dom);
 
     // 2. Scene & Environment
@@ -331,9 +332,9 @@ export const HeroCoins: React.FC<{ onCoinClick?: () => void }> = ({ onCoinClick 
     const zGravity = () => engine.gravity.y * engine.gravity.scale; // 0.0024 px/ms^2
 
     const getResponsiveCoinRadius = (w: number) => {
-      if (w < 440) return 21; // Small phones (iPhone SE, compact Androids)
-      if (w < 640) return 24; // Standard phones (iPhone 14/15/16, Pixel)
-      if (w < 1024) return 28; // Tablets (iPad Mini, iPad Air, Galaxy Tab)
+      if (w < 440) return 17; // Small phones (iPhone SE, compact Androids)
+      if (w < 640) return 21; // Standard phones (iPhone 14/15/16, Pixel)
+      if (w < 1024) return 26; // Tablets (iPad Mini, iPad Air, Galaxy Tab)
       return 34; // Laptops & Desktops
     };
 
@@ -664,17 +665,29 @@ export const HeroCoins: React.FC<{ onCoinClick?: () => void }> = ({ onCoinClick 
       coins = [];
       coinMap.clear();
 
+      const isMobile = width < 640;
       const r = coinRadius;
       const bY = layout.floor - r - 2;
-      const startX = layout.floorStart;
 
-      // 4 coins resting in a clean horizontal arrangement along the floor
-      const initialPositions = [
-        { x: startX + r * 0.9, color: '#8b9298' }, // Slate grey
-        { x: startX + r * 2.8, color: '#161d25' }, // Obsidian dark
-        { x: startX + r * 4.7, color: '#ffffff' }, // Crisp white
-        { x: startX + r * 8.5, color: '#71717a' }, // Grey near kicker
-      ];
+      // On mobile, position coins cleanly starting after REMEMBER. without overrunning screen width
+      const minStart = layout.step3.right + r * 1.2;
+      const startX = isMobile
+        ? Math.min(Math.max(minStart, width * 0.44), width - 3.4 * r * 2)
+        : layout.floorStart;
+
+      // Clean horizontal arrangement along the floor
+      const initialPositions = isMobile
+        ? [
+            { x: startX + r * 0.9, color: '#8b9298' }, // Slate grey
+            { x: startX + r * 2.7, color: '#161d25' }, // Obsidian dark
+            { x: startX + r * 4.5, color: '#ffffff' }, // Crisp white
+          ]
+        : [
+            { x: startX + r * 0.9, color: '#8b9298' }, // Slate grey
+            { x: startX + r * 2.8, color: '#161d25' }, // Obsidian dark
+            { x: startX + r * 4.7, color: '#ffffff' }, // Crisp white
+            { x: startX + r * 8.5, color: '#71717a' }, // Grey near kicker
+          ];
 
       initialPositions.forEach((pos) => {
         const coin = createCoin(pos.x, bY, pos.color, r);
@@ -694,9 +707,14 @@ export const HeroCoins: React.FC<{ onCoinClick?: () => void }> = ({ onCoinClick 
       const palette = COIN_PALETTES[paletteIndex % COIN_PALETTES.length];
       paletteIndex++;
 
-      // Direct drop from top: spawn directly over the start of 'WE'
-      const startX = layout.step1.left + coinRadius * 0.85;
-      const startY = Math.max(10, layout.step1.top - 160);
+      // Compute safe spawn coordinate: NEVER drop inside or above the top navbar!
+      const navEl = container.parentElement?.querySelector('header');
+      const navRect = navEl?.getBoundingClientRect();
+      const cRect = container.getBoundingClientRect();
+      const navBottom = navRect ? navRect.bottom - cRect.top : 48;
+
+      const startX = Math.max(layout.step1.left + coinRadius * 0.85, 20);
+      const startY = Math.min(layout.step1.top - coinRadius * 1.6, Math.max(navBottom + 12, layout.step1.top - 65));
 
       const coin = createCoin(startX, startY, palette);
       coin.isRollingWord = true;
@@ -707,9 +725,10 @@ export const HeroCoins: React.FC<{ onCoinClick?: () => void }> = ({ onCoinClick 
 
       Matter.Composite.add(world, coin.body);
 
-      // Keep limited coins: when total resting coins >= 4, dissolve oldest resting coin smoothly
+      // Keep limited coins: when total resting coins >= maxResting, dissolve oldest resting coin smoothly
+      const maxResting = width < 640 ? 3 : 4;
       const resting = coins.filter((c) => !c.isDying && !c.isRollingWord && !c.route);
-      if (resting.length >= 4) {
+      if (resting.length >= maxResting) {
         const oldest = resting[0];
         if (oldest) {
           startDissolving(oldest);
@@ -738,34 +757,42 @@ export const HeroCoins: React.FC<{ onCoinClick?: () => void }> = ({ onCoinClick 
       const px = e.clientX - rect.left;
       const py = e.clientY - rect.top;
 
+      let hitCoin: CoinItem | null = null;
+      for (let i = coins.length - 1; i >= 0; i--) {
+        const c = coins[i];
+        if (Math.hypot(c.body.position.x - px, c.body.position.y - py) <= c.radius * 1.25) {
+          hitCoin = c;
+          break;
+        }
+      }
+
+      if (!hitCoin) {
+        // User tapped or dragged empty space: allow native page touch scrolling on mobile!
+        return;
+      }
+
       mousePos.isDown = true;
       mousePos.x = px;
       mousePos.y = py;
       mousePos.prevX = px;
       mousePos.prevY = py;
 
-      for (let i = coins.length - 1; i >= 0; i--) {
-        const c = coins[i];
-        if (Math.hypot(c.body.position.x - px, c.body.position.y - py) <= c.radius * 1.1) {
-          draggedCoin = c;
-          c.isRollingWord = false;
-          exitRoute(c);
+      draggedCoin = hitCoin;
+      draggedCoin.isRollingWord = false;
+      exitRoute(draggedCoin);
 
-          dragConstraint = Matter.Constraint.create({
-            pointA: { x: px, y: py },
-            bodyB: c.body,
-            pointB: { x: px - c.body.position.x, y: py - c.body.position.y },
-            stiffness: 0.25,
-            damping: 0.12,
-            length: 0,
-          });
-          Matter.Composite.add(world, dragConstraint);
-          c.body.frictionAir = 0.05;
-          dom.style.cursor = 'grabbing';
-          if (onCoinClick) onCoinClick();
-          break;
-        }
-      }
+      dragConstraint = Matter.Constraint.create({
+        pointA: { x: px, y: py },
+        bodyB: draggedCoin.body,
+        pointB: { x: px - draggedCoin.body.position.x, y: py - draggedCoin.body.position.y },
+        stiffness: 0.25,
+        damping: 0.12,
+        length: 0,
+      });
+      Matter.Composite.add(world, dragConstraint);
+      draggedCoin.body.frictionAir = 0.05;
+      dom.style.cursor = 'grabbing';
+      if (onCoinClick) onCoinClick();
     };
 
     const handlePointerMove = (e: PointerEvent) => {
@@ -1022,8 +1049,8 @@ export const HeroCoins: React.FC<{ onCoinClick?: () => void }> = ({ onCoinClick 
   return (
     <div
       ref={containerRef}
-      className="absolute inset-0 w-full h-full overflow-hidden pointer-events-auto select-none touch-none"
-      style={{ zIndex: 5, touchAction: 'none' }}
+      className="absolute inset-0 w-full h-full overflow-hidden pointer-events-auto select-none"
+      style={{ zIndex: 5, touchAction: 'pan-y' }}
       aria-hidden="true"
     />
   );
