@@ -157,38 +157,54 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
 
           {/* Action Pills: Maximally Visible Primary CTA for Core Purpose */}
           <div className="flex items-center gap-2 sm:gap-3">
-            {/* Primary Hero CTA: Open PDF */}
+            {/* Primary Hero CTA: Open PDF with color-changing text roll animation */}
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="awake-pill group relative px-4 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-bold bg-white text-[#ff003d] hover:bg-white/95 hover:scale-[1.03] active:scale-[0.98] transition-all shadow-lg flex items-center gap-2 cursor-pointer"
-              title="Upload PDF to reflow into a book"
+              className="awake-pill group relative px-4 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-bold bg-white hover:bg-[#161d25] text-[#ff003d] hover:text-white hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 shadow-lg flex items-center gap-2 cursor-pointer"
             >
-              <Upload className="w-3.5 h-3.5 text-[#ff003d] group-hover:-translate-y-0.5 transition-transform" />
-              <span>open pdf.</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-[#ff003d] animate-pulse" />
+              <Upload className="w-3.5 h-3.5 text-[#ff003d] group-hover:text-white group-hover:-translate-y-0.5 transition-all duration-300" />
+              <SwapWord
+                word="open pdf."
+                outgoingClassName="text-[#ff003d]"
+                incomingClassName="text-white"
+                groupHover
+                autoRoll={false}
+              />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#ff003d] group-hover:bg-white animate-pulse transition-colors duration-300" />
             </button>
 
-            {/* Read Classic Sample Pill */}
+            {/* Read Classic Sample Pill with color-changing text roll animation */}
             <button
               onClick={onOpenSampleBook}
-              className="awake-pill hidden sm:inline-flex px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium bg-white/20 hover:bg-white/30 border border-white/40 text-white backdrop-blur-xs hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xs items-center gap-1.5 cursor-pointer"
-              title="Read a sample classic book immediately"
+              className="awake-pill group hidden sm:inline-flex px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium bg-white/20 hover:bg-white border border-white/40 hover:border-white text-white hover:text-[#ff003d] backdrop-blur-xs hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 shadow-xs items-center gap-1.5 cursor-pointer"
             >
-              <BookOpen className="w-3.5 h-3.5 text-white" />
-              <span>sample book.</span>
+              <BookOpen className="w-3.5 h-3.5 text-white group-hover:text-[#ff003d] transition-colors duration-300" />
+              <SwapWord
+                word="sample book."
+                outgoingClassName="text-white"
+                incomingClassName="text-[#ff003d]"
+                groupHover
+                autoRoll={false}
+              />
             </button>
 
-            {/* Awake Signature Menu Pill */}
+            {/* Awake Signature Menu Pill with color-changing text roll animation */}
             <button
               onClick={() => setIsMenuOpen(true)}
-              className="awake-pill group px-3.5 sm:px-4 py-2 sm:py-2.5 bg-white/20 hover:bg-white/30 border border-white/30 text-white transition shadow-xs flex items-center gap-2.5 font-medium text-xs sm:text-sm cursor-pointer"
+              className="awake-pill group px-3.5 sm:px-4 py-2 sm:py-2.5 bg-white/20 hover:bg-white border border-white/30 hover:border-white text-white hover:text-[#ff003d] transition-all duration-300 shadow-xs flex items-center gap-2.5 font-medium text-xs sm:text-sm cursor-pointer"
               aria-label="Open menu"
             >
-              <span>menu.</span>
+              <SwapWord
+                word="menu."
+                outgoingClassName="text-white"
+                incomingClassName="text-[#ff003d]"
+                groupHover
+                autoRoll={false}
+              />
               <div className="flex flex-col gap-1 w-3.5 items-end overflow-hidden py-0.5">
-                <span className="burger-line-1 block h-[1.5px] w-3.5 bg-white rounded-full" />
-                <span className="burger-line-2 block h-[1.5px] w-2 group-hover:w-3.5 transition-all bg-white rounded-full" />
-                <span className="burger-line-3 block h-[1.5px] w-3 group-hover:w-3.5 transition-all bg-white rounded-full" />
+                <span className="burger-line-1 block h-[1.5px] w-3.5 bg-white group-hover:bg-[#ff003d] rounded-full transition-colors duration-300" />
+                <span className="burger-line-2 block h-[1.5px] w-2 group-hover:w-3.5 transition-all duration-300 bg-white group-hover:bg-[#ff003d] rounded-full" />
+                <span className="burger-line-3 block h-[1.5px] w-3 group-hover:w-3.5 transition-all duration-300 bg-white group-hover:bg-[#ff003d] rounded-full" />
               </div>
             </button>
           </div>
@@ -215,7 +231,7 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
                 <span data-coin-step="3"><SwapWord word="REMEMBER." /></span>
               </div>
 
-              {/* PDF Reader Kicker Paragraph + Direct Action Buttons */}
+              {/* PDF Reader Kicker Paragraph + Direct Action Buttons with color-changing roll animation */}
               <div className="pointer-events-auto text-left max-w-[360px] sm:mb-2 space-y-3" data-coins-kicker="">
                 <p className="font-body-sans normal-case text-xs sm:text-[13px] font-normal text-white/90 leading-[1.65] tracking-normal">
                   Kindle Reflow transforms static, fixed-page PDFs into fluid, responsive books. Enjoy Bookerly typography, two-page hardcover spreads, built-in offline dictionary, and zero zoom fatigue.
@@ -223,17 +239,29 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
                 <div className="flex items-center gap-2.5 pt-0.5">
                   <button
                     onClick={() => fileInputRef.current?.click()}
-                    className="awake-pill group px-4 py-2 bg-white text-[#ff003d] font-bold text-xs tracking-wider uppercase hover:bg-white/95 hover:scale-[1.03] active:scale-[0.98] transition-all shadow-md flex items-center gap-2 cursor-pointer"
+                    className="awake-pill group px-4 py-2 bg-white hover:bg-[#161d25] text-[#ff003d] hover:text-white font-bold text-xs tracking-wider uppercase hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 shadow-md flex items-center gap-2 cursor-pointer"
                   >
-                    <Upload className="w-3.5 h-3.5 group-hover:-translate-y-0.5 transition-transform" />
-                    <span>Upload PDF</span>
+                    <Upload className="w-3.5 h-3.5 text-[#ff003d] group-hover:text-white group-hover:-translate-y-0.5 transition-all duration-300" />
+                    <SwapWord
+                      word="Upload PDF"
+                      outgoingClassName="text-[#ff003d]"
+                      incomingClassName="text-white"
+                      groupHover
+                      autoRoll={false}
+                    />
                   </button>
                   <button
                     onClick={onOpenSampleBook}
-                    className="awake-pill px-3.5 py-2 bg-white/20 hover:bg-white/30 border border-white/40 text-white font-medium text-xs tracking-wider uppercase hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-1.5 cursor-pointer"
+                    className="awake-pill group px-3.5 py-2 bg-white/20 hover:bg-white border border-white/40 hover:border-white text-white hover:text-[#ff003d] font-medium text-xs tracking-wider uppercase hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center gap-1.5 cursor-pointer"
                   >
-                    <BookOpen className="w-3.5 h-3.5" />
-                    <span>Try Classic</span>
+                    <BookOpen className="w-3.5 h-3.5 text-white group-hover:text-[#ff003d] transition-colors duration-300" />
+                    <SwapWord
+                      word="Try Classic"
+                      outgoingClassName="text-white"
+                      incomingClassName="text-[#ff003d]"
+                      groupHover
+                      autoRoll={false}
+                    />
                   </button>
                 </div>
               </div>
