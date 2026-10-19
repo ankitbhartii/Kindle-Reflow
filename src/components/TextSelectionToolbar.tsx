@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { HighlightColor } from '../types/reader';
-import { Edit3, Copy, Pin, Share2, Check, Sparkles } from 'lucide-react';
+import { Edit3, Copy, Pin, Share2, Check, Sparkles, BookOpen } from 'lucide-react';
 
 interface TextSelectionToolbarProps {
   position: { x: number; y: number } | null;
@@ -8,6 +8,7 @@ interface TextSelectionToolbarProps {
   onHighlight: (color: HighlightColor) => void;
   onAddNote: () => void;
   onPin: () => void;
+  onDefine?: () => void;
   onClose: () => void;
 }
 
@@ -17,6 +18,7 @@ export const TextSelectionToolbar: React.FC<TextSelectionToolbarProps> = ({
   onHighlight,
   onAddNote,
   onPin,
+  onDefine,
   onClose,
 }) => {
   const [copied, setCopied] = useState(false);
@@ -60,12 +62,18 @@ export const TextSelectionToolbar: React.FC<TextSelectionToolbarProps> = ({
     { id: 'orange', hex: '#fb923c', bgClass: 'bg-orange-400' },
   ];
 
+  const isSingleWord = selectedText.trim().split(/\s+/).filter(Boolean).length <= 2;
+  const isNearTop = position.y < 130;
+  const clampedX = Math.max(130, Math.min(window.innerWidth - 130, position.x));
+  const posY = isNearTop ? Math.min(window.innerHeight - 80, position.y + 36) : Math.max(20, position.y - 12);
+  const transformClass = isNearTop ? '-translate-x-1/2' : '-translate-x-1/2 -translate-y-full';
+
   return (
     <div
-      className="fixed z-50 transform -translate-x-1/2 -translate-y-full mb-3 animate-in fade-in zoom-in-95 duration-150 pointer-events-auto"
+      className={`fixed z-50 transform ${transformClass} mb-3 animate-in fade-in zoom-in-95 duration-150 pointer-events-auto`}
       style={{
-        left: `${Math.max(140, Math.min(window.innerWidth - 140, position.x))}px`,
-        top: `${Math.max(60, position.y - 12)}px`,
+        left: `${clampedX}px`,
+        top: `${posY}px`,
       }}
       onClick={(e) => e.stopPropagation()}
     >
@@ -92,6 +100,17 @@ export const TextSelectionToolbar: React.FC<TextSelectionToolbarProps> = ({
 
         {/* Action Buttons Row with Awake Pill Design */}
         <div className="flex items-center gap-1">
+          {/* Define / Dictionary (if 1-2 words and onDefine supplied) */}
+          {isSingleWord && onDefine && (
+            <button
+              onClick={onDefine}
+              className="awake-pill px-3 py-1.5 text-xs font-semibold rounded-full hover:bg-(--bg-subtle) text-(--text-primary) transition flex items-center gap-1.5"
+            >
+              <BookOpen className="w-3.5 h-3.5 text-[#ff003d]" />
+              <span>Define</span>
+            </button>
+          )}
+
           {/* Highlight */}
           <button
             onClick={() => {

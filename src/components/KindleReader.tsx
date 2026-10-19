@@ -84,6 +84,7 @@ export const KindleReader: React.FC<KindleReaderProps> = ({
   const touchStartXRef = useRef<number | null>(null);
   const touchStartYRef = useRef<number | null>(null);
   const touchStartTimeRef = useRef<number>(0);
+  const lastSelectionTimeRef = useRef<number>(0);
 
   // Load Bookmarks & Highlights for this book
   useEffect(() => {
@@ -257,38 +258,73 @@ export const KindleReader: React.FC<KindleReaderProps> = ({
     }
   };
 
-  // Handle Text Selection Detection (Mobile touch & mouse)
-  const handleTextSelection = () => {
-    setTimeout(() => {
-      const sel = window.getSelection();
-      if (!sel || sel.isCollapsed) {
-        return;
-      }
-      const text = sel.toString().trim();
-      if (text.length > 0) {
-        const range = sel.getRangeAt(0);
-        const rect = range.getBoundingClientRect();
-        if (rect.width > 0 && rect.height > 0) {
-          setSelectedText(text);
-          setSelectionCoords({
-            x: rect.left + rect.width / 2,
-            y: rect.top,
-          });
-          setIsToolbarOpen(true);
+  // Handle Text Selection Detection (Mobile long-press & touch handles, desktop cursor)
+  useEffect(() => {
+    let timeoutId: number;
 
-          // If 1-2 words, look up dictionary definition instantly
-          const words = text.split(/\s+/).filter(Boolean);
-          if (words.length <= 2) {
-            lookupDefinition(words[0]).then((entry) => {
-              if (entry) {
-                setDictEntry(entry);
-                setIsDictOpen(true);
+    const onSelectionChange = () => {
+      clearTimeout(timeoutId);
+      timeoutId = window.setTimeout(() => {
+        const sel = window.getSelection();
+        if (!sel || sel.isCollapsed) {
+          return;
+        }
+
+        // Only handle selections originating within reader content
+        if (contentRef.current && !contentRef.current.contains(sel.anchorNode)) {
+          return;
+        }
+
+        const text = sel.toString().trim();
+        if (text.length > 0) {
+          try {
+            const range = sel.getRangeAt(0);
+            const rect = range.getBoundingClientRect();
+            if (rect.width > 0 && rect.height > 0) {
+              lastSelectionTimeRef.current = Date.now();
+              setSelectedText(text);
+              setSelectionCoords({
+                x: rect.left + rect.width / 2,
+                y: rect.top,
+              });
+              setIsToolbarOpen(true);
+
+              // If 1-2 words, look up dictionary definition instantly
+              const words = text.split(/\s+/).filter(Boolean);
+              if (words.length <= 2) {
+                lookupDefinition(words[0]).then((entry) => {
+                  if (entry) {
+                    setDictEntry(entry);
+                    setIsDictOpen(true);
+                  }
+                });
               }
-            });
+            }
+          } catch {
+            // Ignore range errors during mid-selection
           }
         }
-      }
-    }, 40);
+      }, 120);
+    };
+
+    document.addEventListener('selectionchange', onSelectionChange);
+    return () => {
+      document.removeEventListener('selectionchange', onSelectionChange);
+      clearTimeout(timeoutId);
+    };
+  }, []);
+
+  const handleTriggerDictionary = () => {
+    if (!selectedText) return;
+    const words = selectedText.split(/\s+/).filter(Boolean);
+    if (words.length > 0) {
+      lookupDefinition(words[0]).then((entry) => {
+        if (entry) {
+          setDictEntry(entry);
+          setIsDictOpen(true);
+        }
+      });
+    }
   };
 
   // Add Highlight Action
@@ -380,8 +416,6 @@ export const KindleReader: React.FC<KindleReaderProps> = ({
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
-    handleTextSelection();
-
     if (touchStartXRef.current === null || touchStartYRef.current === null) return;
     const touchEndX = e.changedTouches[0].clientX;
     const touchEndY = e.changedTouches[0].clientY;
@@ -407,16 +441,22 @@ export const KindleReader: React.FC<KindleReaderProps> = ({
 
   // Tap Zone click handler (Left 22%, Center 56%, Right 22%)
   const handleSurfaceClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    // If text was just selected, do not trigger edge tap
+    // If text was selected within the last 500ms, ignore synthetic mobile click!
+    if (Date.now() - lastSelectionTimeRef.current < 500) {
+      return;
+    }
+
+    // If text is currently selected, do not dismiss or trigger edge tap
     const sel = window.getSelection();
     if (sel && sel.toString().trim().length > 0) {
       return;
     }
 
-    // Dismiss any active toolbar or dictionary card on canvas tap
+    // Dismiss any active toolbar or dictionary card on deliberate canvas tap
     if (isToolbarOpen || isDictOpen) {
       setIsToolbarOpen(false);
       setIsDictOpen(false);
+      window.getSelection()?.removeAllRanges();
       return;
     }
 
@@ -633,11 +673,14 @@ export const KindleReader: React.FC<KindleReaderProps> = ({
 
       {/* Main Reflowable Reading Canvas */}
       <main
-        className="flex-1 relative overflow-hidden flex flex-col cursor-default"
+        className="flex-1 relative overflow-hidden flex flex-col cursor-default select-text"
         onClick={handleSurfaceClick}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
-        onMouseUp={handleTextSelection}
+        onContextMenu={(e) => {
+          // Suppress Android native context menu and Google Touch to Search
+          e.preventDefault();
+        }}
       >
         {/* Subtle Running Header at top of page (Kindle aesthetic) */}
         <div className="h-8 sm:h-10 pt-2 px-6 flex items-center justify-between text-[11px] text-(--text-muted) opacity-60">
@@ -775,6 +818,7 @@ export const KindleReader: React.FC<KindleReaderProps> = ({
             setIsNoteModalOpen(true);
           }}
           onPin={handlePinSelection}
+          onDefine={handleTriggerDictionary}
           onClose={() => setIsToolbarOpen(false)}
         />
       )}
