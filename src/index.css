@@ -102,6 +102,14 @@
   column-fill: auto;
   word-break: break-word;
   overflow-wrap: break-word;
+  user-select: text;
+  -webkit-user-select: text;
+  -webkit-touch-callout: none;
+}
+
+.kindle-reflow-content ::selection {
+  background-color: var(--selection-color, #fef08a);
+  color: inherit;
 }
 
 .kindle-reflow-content.align-justify {
