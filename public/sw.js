@@ -1,14 +1,11 @@
 /**
- * Kindle-Reflow Service Worker
- * Strategy: Cache-First for assets, Network-First for navigation
+ * Kindle-Reflow Service Worker v3
+ * Strategy: Cache-first for static assets, network-first for navigation
  */
 
-const CACHE_NAME = 'kindle-reflow-v2';
-const STATIC_CACHE = 'kindle-reflow-static-v2';
-const DYNAMIC_CACHE = 'kindle-reflow-dynamic-v2';
+const CACHE_V = 'kindle-reflow-v3';
 
-// Core assets to pre-cache on install
-const PRECACHE_URLS = [
+const PRECACHE = [
   '/',
   '/index.html',
   '/manifest.json',
@@ -21,91 +18,72 @@ const PRECACHE_URLS = [
   '/assets/gallery/gallery-5.jpg',
 ];
 
-// ── Install ──────────────────────────────────────────────────────────────────
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(STATIC_CACHE).then((cache) => {
-      return cache.addAll(PRECACHE_URLS);
-    }).then(() => self.skipWaiting())
+// ── Install: pre-cache core assets ──────────────────────────────────────────
+self.addEventListener('install', (evt) => {
+  evt.waitUntil(
+    caches.open(CACHE_V)
+      .then((c) => c.addAll(PRECACHE))
+      .then(() => self.skipWaiting())
   );
 });
 
-// ── Activate ─────────────────────────────────────────────────────────────────
-self.addEventListener('activate', (event) => {
-  const allowedCaches = [STATIC_CACHE, DYNAMIC_CACHE];
-  event.waitUntil(
-    caches.keys().then((cacheNames) =>
-      Promise.all(
-        cacheNames
-          .filter((name) => !allowedCaches.includes(name))
-          .map((name) => caches.delete(name))
-      )
-    ).then(() => self.clients.claim())
+// ── Activate: remove old caches ──────────────────────────────────────────────
+self.addEventListener('activate', (evt) => {
+  evt.waitUntil(
+    caches.keys()
+      .then((keys) => Promise.all(
+        keys.filter((k) => k !== CACHE_V).map((k) => caches.delete(k))
+      ))
+      .then(() => self.clients.claim())
   );
 });
 
 // ── Fetch ─────────────────────────────────────────────────────────────────────
-self.addEventListener('fetch', (event) => {
-  const { request } = event;
-  const url = new URL(request.url);
+self.addEventListener('fetch', (evt) => {
+  const req = evt.request;
+  if (req.method !== 'GET') return;
 
-  // Skip non-GET and chrome-extension
-  if (request.method !== 'GET') return;
-  if (url.protocol === 'chrome-extension:') return;
+  const url = new URL(req.url);
 
-  // Navigation requests → Network first, fallback to cached index.html
-  if (request.mode === 'navigate') {
-    event.respondWith(
-      fetch(request)
-        .then((response) => {
-          const clone = response.clone();
-          caches.open(DYNAMIC_CACHE).then((cache) => cache.put(request, clone));
-          return response;
-        })
+  // Skip browser-extension requests
+  if (!url.protocol.startsWith('http')) return;
+
+  // Google Fonts — stale-while-revalidate
+  if (url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com') {
+    evt.respondWith(staleWhileRevalidate(req));
+    return;
+  }
+
+  // HTML navigation — network first, fall back to cached /index.html
+  if (req.mode === 'navigate') {
+    evt.respondWith(
+      fetch(req)
+        .then((res) => { cache(req, res.clone()); return res; })
         .catch(() => caches.match('/index.html'))
     );
     return;
   }
 
-  // Google Fonts → Cache first (stale-while-revalidate)
-  if (url.origin === 'https://fonts.googleapis.com' || url.origin === 'https://fonts.gstatic.com') {
-    event.respondWith(
-      caches.match(request).then((cached) => {
-        const fetchPromise = fetch(request).then((response) => {
-          caches.open(DYNAMIC_CACHE).then((cache) => cache.put(request, response.clone()));
-          return response;
-        });
-        return cached || fetchPromise;
-      })
-    );
-    return;
-  }
-
-  // Local assets → Cache first, then network
-  if (url.origin === self.location.origin) {
-    event.respondWith(
-      caches.match(request).then((cached) => {
-        if (cached) return cached;
-        return fetch(request).then((response) => {
-          if (response.ok) {
-            caches.open(DYNAMIC_CACHE).then((cache) => cache.put(request, response.clone()));
-          }
-          return response;
-        });
-      })
-    );
-    return;
-  }
-
-  // All else → network with dynamic cache fallback
-  event.respondWith(
-    fetch(request)
-      .then((response) => {
-        if (response.ok) {
-          caches.open(DYNAMIC_CACHE).then((cache) => cache.put(request, response.clone()));
-        }
-        return response;
-      })
-      .catch(() => caches.match(request))
+  // Everything else on same origin — cache first
+  evt.respondWith(
+    caches.match(req).then((cached) => {
+      if (cached) return cached;
+      return fetch(req).then((res) => { cache(req, res.clone()); return res; });
+    })
   );
 });
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function cache(req, res) {
+  if (!res || res.status !== 200 || res.type === 'opaque') return;
+  caches.open(CACHE_V).then((c) => c.put(req, res));
+}
+
+function staleWhileRevalidate(req) {
+  return caches.open(CACHE_V).then((c) =>
+    c.match(req).then((cached) => {
+      const fresh = fetch(req).then((res) => { c.put(req, res.clone()); return res; });
+      return cached || fresh;
+    })
+  );
+}
