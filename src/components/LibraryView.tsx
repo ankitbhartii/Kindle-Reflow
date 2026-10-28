@@ -2,27 +2,29 @@ import React, { useState, useRef, useEffect } from 'react';
 import { BookMetadata, ReadingSettings } from '../types/reader';
 import {
   Upload,
-  Sparkles,
   ArrowRight,
+  X,
+  Bookmark,
+  Trash2,
+  BookOpen,
+  ChevronRight,
+  Shield,
+  Smartphone,
+  Type,
+  Volume2,
+  Sparkles,
   Sun,
   Moon,
   Coffee,
-  X,
-  BookText,
-  Volume2,
-  Bookmark,
+  Menu,
+  Zap,
+  Download,
+  ArrowUpRight,
   Layers,
-  ChevronRight,
-  ShieldCheck,
-  Smartphone,
-  Trash2,
-  BookOpen,
-  Check,
-  Copy,
 } from 'lucide-react';
 import { ParseProgress } from '../services/pdfParser';
-import { HeroCoins } from './HeroCoins';
-import { SwapWord } from './SwapWord';
+import { PhotoGalleryAccordion } from './PhotoGalleryAccordion';
+import { PWAInstallBanner } from './PWAInstallBanner';
 
 interface LibraryViewProps {
   books: BookMetadata[];
@@ -35,6 +37,18 @@ interface LibraryViewProps {
   isParsing: boolean;
   parseProgress: ParseProgress | null;
 }
+
+const TICKER_ITEMS = [
+  '⚡ REFLOW ANY PDF',
+  '✦ BOOKERLY TYPOGRAPHY',
+  '✦ OFFLINE DICTIONARY',
+  '✦ TWO-PAGE SPREAD',
+  '⚡ 100% CLIENT-SIDE PRIVATE',
+  '✦ OLED DARK MODE',
+  '✦ INDEXEDDB PERSISTENCE',
+  '⚡ ZERO CLOUD UPLOADS',
+  '✦ INSTALL ON ANDROID',
+];
 
 export const LibraryView: React.FC<LibraryViewProps> = ({
   books,
@@ -49,63 +63,46 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
 }) => {
   const [isDragOver, setIsDragOver] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [copiedEmail, setCopiedEmail] = useState(false);
-  const [currentTimeStr, setCurrentTimeStr] = useState('23:29');
+  const [currentTimeStr, setCurrentTimeStr] = useState('00:00');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Live real-time clock ticker
   useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      const hrs = String(now.getHours()).padStart(2, '0');
-      const mins = String(now.getMinutes()).padStart(2, '0');
-      setCurrentTimeStr(`${hrs}:${mins}`);
+    const tick = () => {
+      const d = new Date();
+      setCurrentTimeStr(`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`);
     };
-    updateTime();
-    const timer = setInterval(updateTime, 10000);
-    return () => clearInterval(timer);
+    tick();
+    const id = setInterval(tick, 10_000);
+    return () => clearInterval(id);
   }, []);
 
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(true);
-  };
-
-  const handleDragLeave = () => {
-    setIsDragOver(false);
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      const file = e.dataTransfer.files[0];
-      if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
-        onSelectPdfFile(file);
-      } else {
-        alert('Please select a valid PDF file.');
-      }
+  const handleDragOver  = (e: React.DragEvent) => { e.preventDefault(); setIsDragOver(true); };
+  const handleDragLeave = () => setIsDragOver(false);
+  const handleDrop      = (e: React.DragEvent) => {
+    e.preventDefault(); setIsDragOver(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file && (file.type === 'application/pdf' || file.name.endsWith('.pdf'))) {
+      onSelectPdfFile(file);
+    } else if (file) {
+      alert('Please drop a valid PDF file.');
     }
   };
-
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      onSelectPdfFile(e.target.files[0]);
-    }
+    const file = e.target.files?.[0];
+    if (file) onSelectPdfFile(file);
   };
 
-  const handleCopyEmail = (e: React.MouseEvent) => {
-    e.preventDefault();
-    navigator.clipboard.writeText('contact@awakeagency.dev');
-    setCopiedEmail(true);
-    setTimeout(() => setCopiedEmail(false), 2000);
-  };
-
-  const themeClass = `theme-${settings.theme}`;
+  const tickerStr = TICKER_ITEMS.join('  ·  ');
+  const tickerDouble = `${tickerStr}  ·  ${tickerStr}  ·  `;
 
   return (
-    <div className={`min-h-screen ${themeClass} font-body-sans p-2.5 sm:p-5 bg-white text-(--c-ink) transition-colors duration-200 selection:bg-white selection:text-[#ff003d]`}>
-      {/* Hidden File Input */}
+    <div
+      className="min-h-screen w-full overflow-x-hidden bg-[#F8F4E8] text-[#09090B] selection:bg-[#D2E823] selection:text-[#09090B]"
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+    >
+      {/* Hidden file input */}
       <input
         type="file"
         ref={fileInputRef}
@@ -114,652 +111,757 @@ export const LibraryView: React.FC<LibraryViewProps> = ({
         className="hidden"
       />
 
-      {/* =========================================================================
-          HERO STAGE: Exact Replica of Awake Agency (Red Framed Card)
-          ========================================================================= */}
-      <div
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-        className={`w-full rounded-[20px] sm:rounded-[28px] lg:rounded-[32px] bg-[#ff003d] text-white min-h-[calc(100dvh-1rem)] sm:min-h-[calc(100vh-2.5rem)] relative overflow-hidden flex flex-col justify-between p-4 sm:p-8 lg:p-14 shadow-2xl transition-all ${
-          isDragOver ? 'ring-4 ring-white ring-inset scale-[0.998]' : ''
-        }`}
-      >
-        {/* Full Card Drag-and-Drop Overlay */}
-        {isDragOver && (
-          <div className="absolute inset-0 z-50 bg-[#ff003d]/92 backdrop-blur-xs flex flex-col items-center justify-center pointer-events-none animate-in fade-in zoom-in-95 duration-200">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white text-[#ff003d] flex items-center justify-center shadow-2xl mb-3 sm:mb-4 animate-bounce">
-              <Upload className="w-8 h-8 sm:w-9 sm:h-9" />
+      {/* PWA Install Banner */}
+      <PWAInstallBanner />
+
+      {/* ════════════════════════════════════════════════════
+          PARSING OVERLAY
+          ════════════════════════════════════════════════════ */}
+      {isParsing && parseProgress && (
+        <div className="fixed inset-0 z-[9000] bg-[#09090B]/96 flex flex-col items-center justify-center gap-5 px-4">
+          <div
+            className="w-full max-w-xs bg-[#09090B] border-2 border-[#D2E823] rounded-2xl p-6 text-center space-y-4"
+            style={{ boxShadow: '6px 6px 0px 0px #D2E823' }}
+          >
+            <Zap className="w-8 h-8 text-[#D2E823] mx-auto animate-pulse" />
+            <p className="font-display text-[#D2E823] text-lg">REFLOWING PDF</p>
+            <div className="w-full bg-[#F8F4E8]/10 rounded-sm h-2 border border-[#F8F4E8]/20 overflow-hidden">
+              <div
+                className="h-full bg-[#D2E823] transition-all duration-300"
+                style={{ width: parseProgress.totalPages > 0 ? `${(parseProgress.currentPage / parseProgress.totalPages) * 100}%` : '25%' }}
+              />
             </div>
-            <h3 className="font-display text-2xl sm:text-4xl font-extrabold uppercase tracking-tight text-white">
-              Drop PDF to Reflow
-            </h3>
-            <p className="text-white/80 text-[11px] sm:text-sm mt-1.5 sm:mt-2 font-medium tracking-widest uppercase">
-              100% Client-side · Bookerly Typography · Two-Page Spread
+            <p className="font-mono-label text-[#F8F4E8]/60 text-xs">
+              {parseProgress.status}
+              {parseProgress.totalPages > 0 && ` · Page ${parseProgress.currentPage}/${parseProgress.totalPages}`}
             </p>
-          </div>
-        )}
-
-        {/* Interactive Physics Coins with Moving 'k.' */}
-        <HeroCoins onCoinClick={() => fileInputRef.current?.click()} />
-
-        {/* Top Navbar inside Red Card */}
-        <header className="relative z-30 flex items-center justify-between w-full pointer-events-auto gap-2 shrink-0">
-          {/* Logo with Character Roll on Hover */}
-          <div className="flex items-center min-w-0 shrink-0">
-            <a
-              href="/"
-              className="font-display font-medium text-[1.15rem] sm:text-[1.65rem] lg:text-[1.9rem] tracking-tight text-white select-none cursor-pointer leading-none truncate"
-            >
-              <SwapWord word="Kindle-Reflow" className="font-medium" />
-            </a>
-          </div>
-
-          {/* Action Pills: Maximally Visible Primary CTA for Core Purpose */}
-          <div className="flex items-center gap-1.5 sm:gap-2.5 lg:gap-3 shrink-0">
-            {/* Primary Hero CTA: Open PDF with color-changing text roll animation */}
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              className="awake-pill group relative px-2.5 sm:px-5 py-1.5 sm:py-2.5 text-[11px] sm:text-sm font-bold bg-white hover:bg-[#161d25] text-[#ff003d] hover:text-white hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 shadow-lg flex items-center gap-1.5 sm:gap-2 cursor-pointer shrink-0"
-            >
-              <Upload className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#ff003d] group-hover:text-white group-hover:-translate-y-0.5 transition-all duration-300 shrink-0" />
-              <SwapWord
-                word="open pdf."
-                outgoingClassName="text-[#ff003d]"
-                incomingClassName="text-white"
-                groupHover
-                autoRoll={false}
-              />
-              <span className="w-1.5 h-1.5 rounded-full bg-[#ff003d] group-hover:bg-white animate-pulse transition-colors duration-300 shrink-0" />
-            </button>
-
-            {/* Read Classic Sample Pill (Visible on tablet & desktop) */}
-            <button
-              onClick={onOpenSampleBook}
-              className="awake-pill group hidden md:inline-flex px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium bg-white/20 hover:bg-white border border-white/40 hover:border-white text-white hover:text-[#ff003d] backdrop-blur-xs hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 shadow-xs items-center gap-1.5 cursor-pointer shrink-0"
-            >
-              <BookOpen className="w-3.5 h-3.5 text-white group-hover:text-[#ff003d] transition-colors duration-300 shrink-0" />
-              <SwapWord
-                word="sample book."
-                outgoingClassName="text-white"
-                incomingClassName="text-[#ff003d]"
-                groupHover
-                autoRoll={false}
-              />
-            </button>
-
-            {/* Awake Signature Menu Pill with color-changing text roll animation */}
-            <button
-              onClick={() => setIsMenuOpen(true)}
-              className="awake-pill group px-2.5 sm:px-4 py-1.5 sm:py-2.5 bg-white/20 hover:bg-white border border-white/30 hover:border-white text-white hover:text-[#ff003d] transition-all duration-300 shadow-xs flex items-center gap-1.5 sm:gap-2.5 font-medium text-[11px] sm:text-sm cursor-pointer shrink-0"
-              aria-label="Open menu"
-            >
-              <SwapWord
-                word="menu."
-                outgoingClassName="text-white"
-                incomingClassName="text-[#ff003d]"
-                groupHover
-                autoRoll={false}
-              />
-              <div className="flex flex-col gap-0.5 sm:gap-1 w-3 sm:w-3.5 items-end overflow-hidden py-0.5">
-                <span className="burger-line-1 block h-[1.5px] w-3 sm:w-3.5 bg-white group-hover:bg-[#ff003d] rounded-full transition-colors duration-300" />
-                <span className="burger-line-2 block h-[1.5px] w-2 group-hover:w-3 sm:group-hover:w-3.5 transition-all duration-300 bg-white group-hover:bg-[#ff003d] rounded-full" />
-                <span className="burger-line-3 block h-[1.5px] w-2.5 sm:w-3 group-hover:w-3 sm:group-hover:w-3.5 transition-all duration-300 bg-white group-hover:bg-[#ff003d] rounded-full" />
-              </div>
-            </button>
-          </div>
-        </header>
-
-        {/* Big Split Headline Text: Fluid & Responsive across Mobile, Tablet, Laptop */}
-        <div className="relative z-10 my-auto py-2 sm:py-6 lg:py-8 pointer-events-none select-none w-full">
-          <div className="space-y-1 sm:space-y-2 lg:space-y-3 pointer-events-auto w-full">
-            {/* Line 1: WE ............... REFLOW */}
-            <div className="font-display font-medium uppercase text-[clamp(1.4rem,5.2vw,7.2rem)] leading-[0.98] tracking-[-0.015em] text-white flex justify-between items-baseline w-full" data-coins-above="">
-              <span data-coin-step="1"><SwapWord word="WE" /></span>
-              <SwapWord word="REFLOW" />
-            </div>
-
-            {/* Line 2: BOOKS ............... PEOPLE */}
-            <div className="font-display font-medium uppercase text-[clamp(1.4rem,5.2vw,7.2rem)] leading-[0.98] tracking-[-0.015em] text-white flex justify-between items-baseline w-full" data-coins-above="">
-              <span data-coin-step="2"><SwapWord word="BOOKS" /></span>
-              <SwapWord word="PEOPLE" />
-            </div>
-
-            {/* Line 3: REMEMBER. ............... Kicker Paragraph + Action Buttons */}
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between w-full gap-2 sm:gap-4 md:gap-6 pt-0.5 sm:pt-1">
-              <div className="font-display font-medium uppercase text-[clamp(1.4rem,5.2vw,7.2rem)] leading-[0.98] tracking-[-0.015em] text-white" data-coins-above="">
-                <span data-coin-step="3"><SwapWord word="REMEMBER." /></span>
-              </div>
-
-              {/* PDF Reader Kicker Paragraph + Direct Action Buttons with color-changing roll animation */}
-              <div className="pointer-events-auto text-left max-w-full sm:max-w-[340px] md:max-w-[360px] sm:mb-2 space-y-1.5 sm:space-y-3" data-coins-kicker="">
-                <p className="font-body-sans normal-case text-[10px] sm:text-[13px] font-normal text-white/90 leading-[1.45] sm:leading-[1.65] tracking-normal">
-                  Kindle Reflow transforms static, fixed-page PDFs into fluid, responsive books. Enjoy Bookerly typography, two-page hardcover spreads, built-in offline dictionary, and zero zoom fatigue.
-                </p>
-                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2.5 pt-0.5">
-                  <button
-                    onClick={() => fileInputRef.current?.click()}
-                    className="awake-pill group px-3 sm:px-4 py-1.5 sm:py-2 bg-white hover:bg-[#161d25] text-[#ff003d] hover:text-white font-bold text-[10px] sm:text-xs tracking-wider uppercase hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 shadow-md flex items-center gap-1.5 sm:gap-2 cursor-pointer"
-                  >
-                    <Upload className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#ff003d] group-hover:text-white group-hover:-translate-y-0.5 transition-all duration-300" />
-                    <SwapWord
-                      word="Upload PDF"
-                      outgoingClassName="text-[#ff003d]"
-                      incomingClassName="text-white"
-                      groupHover
-                      autoRoll={false}
-                    />
-                  </button>
-                  <button
-                    onClick={onOpenSampleBook}
-                    className="awake-pill group px-3 sm:px-3.5 py-1.5 sm:py-2 bg-white/20 hover:bg-white border border-white/40 hover:border-white text-white hover:text-[#ff003d] font-medium text-[10px] sm:text-xs tracking-wider uppercase hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center gap-1.5 cursor-pointer"
-                  >
-                    <BookOpen className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-white group-hover:text-[#ff003d] transition-colors duration-300" />
-                    <SwapWord
-                      word="Try Classic"
-                      outgoingClassName="text-white"
-                      incomingClassName="text-[#ff003d]"
-                      groupHover
-                      autoRoll={false}
-                    />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom Metadata Bar inside Red Card: Responsive on all screens */}
-        <div data-coins-floor="" className="relative z-30 pt-2 sm:pt-4 border-t border-white/20 flex flex-col sm:flex-row sm:items-center justify-between text-[9px] sm:text-xs uppercase tracking-wider text-white font-medium gap-1 sm:gap-2 pointer-events-auto shrink-0">
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping shrink-0" />
-            <span className="opacity-75">QUICK START:</span>
-            <span>CLICK COINS · DROP ANY PDF · REFLOW</span>
-          </div>
-
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            <span className="opacity-75">FEATURES:</span>
-            <span>TWO-PAGE SPREAD · BUILT-IN OFFLINE LEXICON</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Fullscreen Awake Style Overlay Menu */}
-      {isMenuOpen && (
-        <div className="fixed inset-0 z-50 bg-[#ff003d] text-white p-6 sm:p-12 flex flex-col justify-between animate-in fade-in zoom-in-95 duration-300">
-          <div className="flex items-center justify-between border-b border-white/20 pb-6">
-            <div className="flex items-center gap-3">
-              <span className="font-display font-black text-2xl tracking-tighter">KINDLE-REFLOW</span>
-              <span className="text-xs uppercase tracking-widest font-semibold px-2.5 py-0.5 rounded-full bg-white/20">
-                Menu
-              </span>
-            </div>
-            <button
-              onClick={() => setIsMenuOpen(false)}
-              className="awake-pill px-4 py-2 bg-white text-[#ff003d] font-bold text-sm hover:bg-white/90 shadow-lg"
-            >
-              <X className="w-4 h-4 mr-1.5" />
-              <span>close.</span>
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 my-auto max-w-5xl w-full mx-auto">
-            <div className="space-y-4">
-              <span className="text-xs uppercase tracking-widest opacity-70">Navigation</span>
-              <ul className="space-y-4 font-display text-3xl sm:text-5xl font-extrabold uppercase">
-                <li>
-                  <button
-                    onClick={() => {
-                      setIsMenuOpen(false);
-                      fileInputRef.current?.click();
-                    }}
-                    className="hover:translate-x-3 transition-transform flex items-center gap-3 cursor-pointer text-left"
-                  >
-                    <span>01.</span>
-                    <span className="hover:underline underline-offset-8">Upload Local PDF</span>
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => {
-                      setIsMenuOpen(false);
-                      onOpenSampleBook();
-                    }}
-                    className="hover:translate-x-3 transition-transform flex items-center gap-3 cursor-pointer text-left"
-                  >
-                    <span>02.</span>
-                    <span className="hover:underline underline-offset-8">Read Classic Sample</span>
-                  </button>
-                </li>
-                <li>
-                  <a
-                    href="#library-archive"
-                    onClick={() => setIsMenuOpen(false)}
-                    className="hover:translate-x-3 transition-transform flex items-center gap-3 cursor-pointer text-left"
-                  >
-                    <span>03.</span>
-                    <span className="hover:underline underline-offset-8">My Book Archive</span>
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#features-stack"
-                    onClick={() => setIsMenuOpen(false)}
-                    className="hover:translate-x-3 transition-transform flex items-center gap-3 cursor-pointer text-left"
-                  >
-                    <span>04.</span>
-                    <span className="hover:underline underline-offset-8">Architecture</span>
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            <div className="space-y-6 md:border-l md:border-white/20 md:pl-8 flex flex-col justify-center">
-              <div>
-                <span className="text-xs uppercase tracking-widest opacity-70 block mb-2">Reading Palette</span>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => onUpdateSettings({ theme: 'light' })}
-                    className={`awake-pill px-4 py-2 text-xs font-semibold ${
-                      settings.theme === 'light' ? 'bg-white text-[#ff003d]' : 'bg-white/10 hover:bg-white/20'
-                    }`}
-                  >
-                    Light Day
-                  </button>
-                  <button
-                    onClick={() => onUpdateSettings({ theme: 'sepia' })}
-                    className={`awake-pill px-4 py-2 text-xs font-semibold ${
-                      settings.theme === 'sepia' ? 'bg-white text-[#ff003d]' : 'bg-white/10 hover:bg-white/20'
-                    }`}
-                  >
-                    Warm Sepia
-                  </button>
-                  <button
-                    onClick={() => onUpdateSettings({ theme: 'dark' })}
-                    className={`awake-pill px-4 py-2 text-xs font-semibold ${
-                      settings.theme === 'dark' ? 'bg-white text-[#ff003d]' : 'bg-white/10 hover:bg-white/20'
-                    }`}
-                  >
-                    OLED Dark
-                  </button>
-                </div>
-              </div>
-
-              <div className="text-xs opacity-80 space-y-1">
-                <p><strong>100% Client-Side Privacy:</strong> No document leaves your device.</p>
-                <p><strong>Reflow Engine:</strong> Automatic font scaling, column balancing, edge gestures.</p>
-                <p><strong>Offline Lexicon:</strong> Morphological dictionary & Web Speech synthesis.</p>
-              </div>
-
-              <div className="pt-4 border-t border-white/20 flex items-center justify-between text-xs tracking-wider uppercase opacity-75">
-                <span>Warsaw Creative Studio Inspired</span>
-                <span>v2.0.0 Reflow</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="border-t border-white/20 pt-4 flex flex-wrap items-center justify-between text-xs opacity-70">
-            <span>Kindle Reflow · Awake Studio UI Experience</span>
-            <span>Inspired by awakeagency.dev</span>
           </div>
         </div>
       )}
 
-      {/* =========================================================================
-          BELOW THE HERO: Studio Dropzone, Features Stack, and Archive
-          ========================================================================= */}
-      <main className="w-full max-w-7xl mx-auto px-2 sm:px-6 py-12 sm:py-20 space-y-16 sm:space-y-24">
-        {/* AWAKE STUDIO PANEL: Dropzone Container */}
-        <section className="relative">
-          <div
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-            onClick={() => fileInputRef.current?.click()}
-            className={`group relative rounded-[2rem] p-8 sm:p-14 transition-all duration-300 border-2 cursor-pointer overflow-hidden ${
-              isDragOver
-                ? 'border-[#ff003d] bg-[#ff003d]/5 scale-[0.99] shadow-2xl'
-                : 'border-(--c-grey-line) bg-(--c-grey-panel)/80 hover:bg-(--c-grey-panel) hover:border-(--c-ink)/30 shadow-md'
-            }`}
-          >
-            {/* Background Ribbon Vector */}
-            <div className="absolute -bottom-10 -right-10 w-72 h-72 opacity-15 pointer-events-none group-hover:scale-110 transition-transform duration-700">
-              <img src="/assets/awake/svg-19.svg" alt="" className="w-full h-full object-contain" />
+      {/* ════════════════════════════════════════════════════
+          STICKY NAV — mobile-first
+          ════════════════════════════════════════════════════ */}
+      <nav className="sticky top-0 z-50 mx-3 mt-3 sm:mx-4 sm:mt-4 lg:mx-6 lg:mt-5">
+        <div
+          className="flex items-center justify-between px-3 py-2.5 sm:px-4 sm:py-3 rounded-xl sm:rounded-2xl border-2 border-[#09090B]"
+          style={{
+            background: 'rgba(248,244,232,0.92)',
+            backdropFilter: 'blur(24px)',
+            WebkitBackdropFilter: 'blur(24px)',
+            boxShadow: '3px 3px 0px 0px #09090B',
+          }}
+        >
+          {/* Logo */}
+          <a href="/" className="flex items-center gap-2 shrink-0">
+            <div
+              className="w-6 h-6 sm:w-7 sm:h-7 bg-[#09090B] rounded-md flex items-center justify-center border-2 border-[#09090B]"
+              style={{ boxShadow: '2px 2px 0px 0px #D2E823' }}
+            >
+              <span className="font-display text-[#D2E823] text-[10px] sm:text-xs leading-none">K</span>
             </div>
+            <span className="font-display text-[#09090B] text-sm sm:text-base glitch-text hidden xs:block">
+              KINDLE-REFLOW
+            </span>
+            <span className="font-display text-[#09090B] text-sm glitch-text xs:hidden">
+              K-REFLOW
+            </span>
+          </a>
 
-            <div className="relative z-10 flex flex-col items-center text-center max-w-xl mx-auto space-y-4">
-              <div className="w-16 h-16 rounded-full bg-(--c-ink) text-(--c-white) flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform duration-300">
-                <Upload className="w-7 h-7 text-[#ff003d]" />
-              </div>
-
-              <div>
-                <h2 className="font-display font-bold text-2xl sm:text-3xl text-(--c-ink) tracking-tight">
-                  Drop any PDF document here.
-                </h2>
-                <p className="text-sm text-(--text-secondary) mt-1.5 leading-relaxed">
-                  Drop your textbook, novel, research paper, or manual to reflow it into responsive Kindle pages instantly.
-                </p>
-              </div>
-
-              <div className="pt-2">
-                <span className="awake-pill px-6 py-3 text-sm font-bold bg-(--c-ink) text-white group-hover:bg-[#ff003d] transition-colors shadow-lg">
-                  Browse local files
-                </span>
-              </div>
-
-              {/* Security & Feature Badges */}
-              <div className="pt-4 flex flex-wrap items-center justify-center gap-3 text-xs text-(--text-muted)">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-(--bg-surface) border border-(--border-color) shadow-xs">
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>100% Private (No uploads)</span>
-                </span>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-(--bg-surface) border border-(--border-color) shadow-xs">
-                  <Smartphone className="w-3.5 h-3.5 text-blue-600" />
-                  <span>Reflows on Mobile & Laptop</span>
-                </span>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-(--bg-surface) border border-(--border-color) shadow-xs">
-                  <Layers className="w-3.5 h-3.5 text-purple-600" />
-                  <span>Two-Page Spread Ready</span>
-                </span>
-              </div>
-            </div>
+          {/* Right actions */}
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="btn-acid btn-acid-sm px-3 py-1.5 text-xs rounded-lg"
+            >
+              <Upload className="w-3 h-3" />
+              <span className="hidden sm:inline">Open PDF</span>
+              <span className="sm:hidden">PDF</span>
+            </button>
+            <button
+              onClick={onOpenSampleBook}
+              className="btn-paper btn-acid-sm px-3 py-1.5 text-xs rounded-lg hidden md:inline-flex"
+            >
+              <BookOpen className="w-3 h-3" />
+              Sample
+            </button>
+            <a
+              href="#library-archive"
+              className="btn-paper btn-acid-sm px-3 py-1.5 text-xs rounded-lg hidden sm:inline-flex"
+            >
+              <Bookmark className="w-3 h-3" />
+              <span className="hidden md:inline">Archive </span>({books.length})
+            </a>
+            <button
+              onClick={() => setIsMenuOpen(true)}
+              className="btn-paper btn-acid-sm px-2.5 py-1.5 text-xs rounded-lg"
+              aria-label="Menu"
+            >
+              <Menu className="w-4 h-4" />
+            </button>
           </div>
-        </section>
+        </div>
+      </nav>
 
-        {/* AWAKE "SERVICES STACK": 4 Tilted Feature Cards */}
-        <section id="features-stack" className="space-y-8">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-(--c-grey-line) pb-4">
+      {/* ════════════════════════════════════════════════════
+          MARQUEE TICKER
+          ════════════════════════════════════════════════════ */}
+      <div className="ticker-bar overflow-hidden mt-3 sm:mt-4">
+        <div className="marquee-track">
+          <span className="px-4 whitespace-nowrap text-sm">{tickerDouble}</span>
+          <span className="px-4 whitespace-nowrap text-sm">{tickerDouble}</span>
+        </div>
+      </div>
+
+      {/* ════════════════════════════════════════════════════
+          HERO SECTION — responsive 12-col grid
+          ════════════════════════════════════════════════════ */}
+      <section className="px-3 sm:px-4 lg:px-6 mt-6 sm:mt-10 lg:mt-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 lg:gap-8 items-start">
+
+          {/* LEFT col — headline + CTAs */}
+          <div className="lg:col-span-7 space-y-4 sm:space-y-6">
+            {/* Sticker */}
             <div>
-              <span className="text-xs uppercase tracking-widest font-semibold text-[#ff003d]">Engine Architecture</span>
-              <h2 className="font-display font-extrabold text-2xl sm:text-4xl text-(--c-ink) tracking-tight">
-                BUILT FOR PURE READING ERGONOMICS.
-              </h2>
+              <span className="acid-sticker float-card text-xs">
+                <Zap className="w-3 h-3" />
+                Next-Gen PDF Reader · Install on Android
+              </span>
             </div>
-            <p className="text-xs text-(--text-muted) max-w-xs">
-              Every detail engineered to replicate the tactile comfort and typographic elegance of physical books.
+
+            {/* Huge display text */}
+            <div className="leading-none">
+              <h1 className="font-display glitch-text text-[#09090B]"
+                style={{ fontSize: 'clamp(2.6rem, 9vw, 7.5rem)', lineHeight: 0.88 }}>
+                WE
+              </h1>
+              <h1 className="font-display glitch-text text-[#09090B]"
+                style={{ fontSize: 'clamp(2.6rem, 9vw, 7.5rem)', lineHeight: 0.88 }}>
+                REFLOW
+              </h1>
+              <h1 className="font-display glitch-text text-[#09090B]"
+                style={{ fontSize: 'clamp(2.6rem, 9vw, 7.5rem)', lineHeight: 0.88 }}>
+                BOOKS.
+              </h1>
+            </div>
+
+            {/* Sub-text */}
+            <p className="font-body text-[#09090B]/70 text-sm sm:text-base lg:text-lg max-w-lg leading-relaxed font-medium">
+              Transforms static, fixed-page PDFs into fluid, responsive Kindle-style books.
+              Bookerly typography · two-page spread · offline dictionary.
             </p>
-          </div>
 
-          {/* 4 Cards Grid with Awake Rotations */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pt-4">
-            {/* Card 1 */}
-            <div className="tilt-card-1 rounded-[1.5rem] p-6 bg-white border border-(--c-grey-line) shadow-md flex flex-col justify-between min-h-[280px]">
-              <div>
-                <span className="font-display font-bold text-xs text-[#ff003d] tracking-wider uppercase">01 / REFLOW</span>
-                <h3 className="font-display font-bold text-xl text-(--c-ink) mt-2 tracking-tight">
-                  Reflowable Geometry
-                </h3>
-                <p className="text-xs text-(--text-secondary) mt-2 leading-relaxed">
-                  Eliminate pinch-and-pan forever. Continuous text flow reflows multi-column PDFs into elegant book pages matching your exact viewport.
-                </p>
-              </div>
-              <div className="pt-4 border-t border-(--c-grey-line) flex items-center justify-between text-xs text-(--text-muted)">
-                <span>Continuous Layout</span>
-                <BookText className="w-4 h-4 text-(--c-ink)" />
-              </div>
-            </div>
-
-            {/* Card 2 */}
-            <div className="tilt-card-2 rounded-[1.5rem] p-6 bg-(--c-grey-panel) border border-(--c-grey-line) shadow-md flex flex-col justify-between min-h-[280px]">
-              <div>
-                <span className="font-display font-bold text-xs text-[#ff003d] tracking-wider uppercase">02 / SPREAD</span>
-                <h3 className="font-display font-bold text-xl text-(--c-ink) mt-2 tracking-tight">
-                  Two-Page Hardcover
-                </h3>
-                <p className="text-xs text-(--text-secondary) mt-2 leading-relaxed">
-                  Desktop hardcover experience with authentic spine shadow and split column layout, giving you an immersive dual-page reading view.
-                </p>
-              </div>
-              <div className="pt-4 border-t border-(--c-grey-line) flex items-center justify-between text-xs text-(--text-muted)">
-                <span>Hardcover Mode</span>
-                <Layers className="w-4 h-4 text-(--c-ink)" />
-              </div>
-            </div>
-
-            {/* Card 3 */}
-            <div className="tilt-card-3 rounded-[1.5rem] p-6 bg-[#e8e9eb] border border-(--c-grey-line) shadow-md flex flex-col justify-between min-h-[280px]">
-              <div>
-                <span className="font-display font-bold text-xs text-[#ff003d] tracking-wider uppercase">03 / LEXICON</span>
-                <h3 className="font-display font-bold text-xl text-(--c-ink) mt-2 tracking-tight">
-                  Offline Dictionary
-                </h3>
-                <p className="text-xs text-(--text-secondary) mt-2 leading-relaxed">
-                  Instant word definitions, morphological stemming, phonetic pronunciation, and Datamuse fallback without sending a single byte over the web.
-                </p>
-              </div>
-              <div className="pt-4 border-t border-(--c-grey-line) flex items-center justify-between text-xs text-(--text-muted)">
-                <span>100% Offline</span>
-                <Volume2 className="w-4 h-4 text-(--c-ink)" />
-              </div>
-            </div>
-
-            {/* Card 4 */}
-            <div className="tilt-card-4 rounded-[1.5rem] p-6 bg-[#dbdcde] border border-(--c-grey-line) shadow-md flex flex-col justify-between min-h-[280px]">
-              <div>
-                <span className="font-display font-bold text-xs text-[#ff003d] tracking-wider uppercase">04 / MEMORY</span>
-                <h3 className="font-display font-bold text-xl text-(--c-ink) mt-2 tracking-tight">
-                  Persistent State
-                </h3>
-                <p className="text-xs text-(--text-secondary) mt-2 leading-relaxed">
-                  Your bookmarks, annotations, exact reading progress %, and custom font sizes stay synced in your browser's private IndexedDB.
-                </p>
-              </div>
-              <div className="pt-4 border-t border-(--c-grey-line) flex items-center justify-between text-xs text-(--text-muted)">
-                <span>Instant Resume</span>
-                <Bookmark className="w-4 h-4 text-(--c-ink)" />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* AWAKE "ARCHIVE" SECTION: Bookshelf Rows */}
-        <section id="library-archive" className="space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-(--c-grey-line) pb-4">
-            <div>
-              <span className="text-xs uppercase tracking-widest font-semibold text-[#ff003d]">Archive</span>
-              <h2 className="font-display font-extrabold text-2xl sm:text-4xl text-(--c-ink) tracking-tight">
-                MY BOOKS ({books.length})
-              </h2>
-            </div>
-            <p className="text-xs text-(--text-muted)">
-              Indexed locally on this device. Click any title to resume reading.
-            </p>
-          </div>
-
-          {books.length === 0 ? (
-            <div className="rounded-[2rem] p-12 text-center bg-(--c-grey-panel)/60 border border-(--c-grey-line) space-y-4">
-              <BookOpen className="w-12 h-12 mx-auto text-(--text-muted) opacity-40" />
-              <div className="space-y-1">
-                <h3 className="font-display font-bold text-lg text-(--c-ink)">No custom PDFs cached yet.</h3>
-                <p className="text-xs text-(--text-secondary) max-w-md mx-auto">
-                  Drag and drop any PDF above to begin. It will be reflowed and cached here for instantaneous reading anytime.
-                </p>
-              </div>
-              <button
-                onClick={onOpenSampleBook}
-                className="awake-pill px-5 py-2.5 text-xs font-semibold bg-(--c-ink) text-white hover:bg-[#ff003d] transition shadow-md"
-              >
-                Read Classic Sample Book Instead
-              </button>
-            </div>
-          ) : (
-            <div className="rounded-[2rem] bg-(--c-grey-panel)/70 border border-(--c-grey-line) overflow-hidden shadow-sm divide-y divide-(--c-grey-line)">
-              {books.map((b, index) => {
-                const bookIndexStr = String(index + 1).padStart(2, '0');
-                const lastRead = new Date(b.lastReadTime).toLocaleDateString(undefined, {
-                  month: 'short',
-                  day: 'numeric',
-                  year: 'numeric',
-                });
-
-                return (
-                  <div
-                    key={b.id}
-                    onClick={() => onOpenBook(b.id)}
-                    className="archival-row p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer group"
-                  >
-                    <div className="flex items-start sm:items-center gap-4 min-w-0">
-                      {/* Index Tag */}
-                      <span className="font-display font-semibold text-xs text-(--text-muted) group-hover:text-[#ff003d] transition-colors tabular-nums">
-                        [{bookIndexStr}]
-                      </span>
-
-                      {/* Visual Color Pill Spine */}
-                      <div
-                        className="w-8 h-10 rounded-md shadow-sm shrink-0 flex items-center justify-center text-white text-[8px] font-bold uppercase"
-                        style={{ backgroundColor: b.coverColor || '#1e3a8a' }}
-                      >
-                        PDF
-                      </div>
-
-                      <div className="min-w-0">
-                        <h3 className="font-display font-bold text-base sm:text-lg text-(--c-ink) group-hover:text-[#ff003d] transition-colors truncate">
-                          {b.title}
-                        </h3>
-                        <div className="flex items-center gap-3 text-xs text-(--text-muted) mt-0.5">
-                          <span>{b.author || 'Local Document'}</span>
-                          <span>•</span>
-                          <span>{b.pageCount} pages</span>
-                          <span>•</span>
-                          <span>{b.sectionCount} sections</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Metadata & Actions */}
-                    <div className="flex items-center justify-between sm:justify-end gap-6 shrink-0">
-                      <div className="flex items-center gap-2">
-                        <span className="archival-dot w-2 h-2 rounded-full bg-(--c-ink) opacity-40 transition-all duration-300" />
-                        <span className="archival-year text-xs font-semibold text-(--text-secondary) tabular-nums">
-                          {lastRead}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-3">
-                        <span className="awake-pill hidden sm:inline-flex px-3 py-1 text-xs font-semibold bg-white border border-(--c-grey-line) group-hover:bg-[#ff003d] group-hover:text-white group-hover:border-[#ff003d] transition-all shadow-xs">
-                          <span>Resume</span>
-                          <ChevronRight className="w-3 h-3 ml-1" />
-                        </span>
-
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (confirm(`Remove "${b.title}" from local cache?`)) {
-                              onDeleteBook(b.id);
-                            }
-                          }}
-                          className="p-1.5 rounded-full text-(--text-muted) hover:text-[#ff003d] hover:bg-white/80 transition shadow-xs"
-                          title="Delete cached book"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </section>
-
-        {/* AWAKE CTA BAND: Red Banner with Ribbons & Sample Launcher */}
-        <section className="relative rounded-[2rem] bg-[#ff003d] text-white p-8 sm:p-14 overflow-hidden shadow-2xl">
-          {/* Background Ribbon Vector */}
-          <div className="absolute top-0 right-0 w-full h-full opacity-10 pointer-events-none select-none">
-            <img src="/assets/awake/svg-4.svg" alt="" className="w-full h-full object-cover" />
-          </div>
-
-          <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
-            <div className="space-y-2 max-w-xl">
-              <span className="text-xs uppercase tracking-widest font-bold opacity-80">Instant Sample Experience</span>
-              <h2 className="font-display font-extrabold text-2xl sm:text-4xl lg:text-5xl tracking-tight leading-tight">
-                NO PDF ON HAND?<br />
-                START READING NOW.
-              </h2>
-              <p className="text-xs sm:text-sm opacity-90 leading-relaxed">
-                Test the reflow engine immediately with H. G. Wells' <em>The Time Machine</em> bundled with complete Bookerly styling, dictionary lookup, and chapter navigation.
-              </p>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto shrink-0">
-              <button
-                onClick={onOpenSampleBook}
-                className="awake-pill px-8 py-4 bg-white text-[#ff003d] font-bold text-sm sm:text-base hover:bg-white/90 shadow-xl transition active:scale-95 flex items-center justify-center gap-2"
-              >
-                <span>Read Sample Classic</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-
+            {/* CTA row */}
+            <div className="flex flex-wrap gap-2 sm:gap-3">
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className="awake-pill px-6 py-4 bg-white/20 hover:bg-white/30 text-white font-semibold text-sm sm:text-base border border-white/30 transition active:scale-95 flex items-center justify-center gap-2"
+                className="btn-acid px-5 py-3 sm:px-7 sm:py-4 text-sm sm:text-base rounded-xl"
               >
                 <Upload className="w-4 h-4" />
-                <span>Upload PDF</span>
+                UPLOAD PDF
+                <ArrowRight className="w-4 h-4" />
+              </button>
+              <button
+                onClick={onOpenSampleBook}
+                className="btn-paper px-5 py-3 sm:px-7 sm:py-4 text-sm sm:text-base rounded-xl"
+              >
+                <BookOpen className="w-4 h-4" />
+                TRY SAMPLE
+              </button>
+            </div>
+
+            {/* Mobile drop zone shortcut */}
+            <div
+              onClick={() => fileInputRef.current?.click()}
+              className={`sm:hidden acid-card p-4 flex items-center gap-3 transition-all active:scale-[0.98] ${isDragOver ? 'bg-[#D2E823]' : ''}`}
+            >
+              <div
+                className="w-10 h-10 rounded-xl bg-[#09090B] flex items-center justify-center shrink-0"
+                style={{ boxShadow: '3px 3px 0px 0px #D2E823' }}
+              >
+                <Upload className="w-4 h-4 text-[#D2E823]" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-display text-xs">TAP TO UPLOAD PDF</p>
+                <p className="font-mono-label text-[10px] text-[#09090B]/60 mt-0.5">Any PDF · 100% private · offline</p>
+              </div>
+              <ArrowRight className="w-4 h-4 shrink-0" />
+            </div>
+
+            {/* Trust badges — wrap on small screens */}
+            <div className="flex flex-wrap gap-2">
+              {[
+                { icon: Shield, label: '100% Private' },
+                { icon: Smartphone, label: 'Works Offline' },
+                { icon: Download, label: 'Install on Android' },
+                { icon: Layers, label: 'Two-Page Spread' },
+              ].map(({ icon: Icon, label }) => (
+                <span
+                  key={label}
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 border-2 border-[#09090B] rounded-lg bg-[#F8F4E8] font-body text-[11px] sm:text-xs font-semibold"
+                  style={{ boxShadow: '2px 2px 0px 0px #09090B' }}
+                >
+                  <Icon className="w-3 h-3" />
+                  {label}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* RIGHT col — hero image card */}
+          <div className="lg:col-span-5 relative mt-2 lg:mt-0">
+            {/* Floating accent chip */}
+            <div
+              className="acid-card-accent float-card-delay absolute -top-3 -right-1 z-20 px-3 py-2 flex items-center gap-1.5 text-xs font-body font-bold hidden sm:flex rounded-xl"
+              style={{ boxShadow: '5px 5px 0px 0px #09090B' }}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[#09090B] animate-pulse" />
+              LIVE REFLOW
+            </div>
+
+            {/* Image card */}
+            <div
+              className="w-full rounded-2xl sm:rounded-[24px] border-2 border-[#09090B] overflow-hidden"
+              style={{ boxShadow: '6px 6px 0px 0px #09090B' }}
+            >
+              <div className="relative h-48 sm:h-64 md:h-80 lg:h-96 overflow-hidden">
+                <img
+                  src="/assets/gallery/gallery-1.jpg"
+                  alt="Kindle Reflow reading experience"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#09090B]/80 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5 space-y-1.5">
+                  <span className="font-mono-label text-[#D2E823] text-[10px] uppercase tracking-widest">
+                    Fluid Reflow Engine
+                  </span>
+                  <h3 className="font-display text-white text-lg sm:text-xl glitch-text">
+                    TRANSFORM ANY PDF
+                  </h3>
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    className="btn-acid px-3 py-2 text-xs rounded-lg"
+                  >
+                    <Upload className="w-3 h-3" />
+                    OPEN PDF
+                    <ArrowUpRight className="w-3 h-3" />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Info strip below image */}
+            <div className="acid-card mt-3 p-3 sm:p-4 flex items-center gap-3">
+              <div
+                className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[#D2E823] border-2 border-[#09090B] flex items-center justify-center shrink-0"
+              >
+                <span className="font-display text-[#09090B] text-[10px]">{currentTimeStr}</span>
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="font-display text-xs sm:text-sm truncate">REFLOW ENGINE READY</p>
+                <p className="font-mono-label text-[10px] text-[#09090B]/60 mt-0.5">No signup · Zero tracking</p>
+              </div>
+              <ArrowRight className="w-4 h-4 shrink-0" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════════════════
+          REVERSE MARQUEE
+          ════════════════════════════════════════════════════ */}
+      <div className="ticker-bar overflow-hidden mt-8 sm:mt-10">
+        <div className="marquee-track" style={{ animationDirection: 'reverse' }}>
+          <span className="px-4 whitespace-nowrap text-sm">{tickerDouble}</span>
+          <span className="px-4 whitespace-nowrap text-sm">{tickerDouble}</span>
+        </div>
+      </div>
+
+      {/* ════════════════════════════════════════════════════
+          JITTER PHOTO GALLERY
+          ════════════════════════════════════════════════════ */}
+      <section className="px-3 sm:px-4 lg:px-6 mt-8 sm:mt-12">
+        <div className="mb-5 flex flex-col xs:flex-row xs:items-end justify-between gap-3 border-b-2 border-[#09090B] pb-4">
+          <div>
+            <span className="font-mono-label text-[10px] sm:text-xs text-[#09090B]/60 uppercase tracking-widest">Engine Architecture</span>
+            <h2 className="font-display text-xl sm:text-3xl lg:text-4xl mt-1 glitch-text">
+              5 CORE PILLARS
+            </h2>
+          </div>
+          <span className="acid-sticker text-[10px] self-start xs:self-auto" style={{ transform: 'rotate(2deg)' }}>
+            Hover / Tap ↓
+          </span>
+        </div>
+        <PhotoGalleryAccordion
+          onOpenPdf={() => fileInputRef.current?.click()}
+          onOpenSampleBook={onOpenSampleBook}
+        />
+      </section>
+
+      {/* ════════════════════════════════════════════════════
+          BENTO GRID — fully responsive
+          ════════════════════════════════════════════════════ */}
+      <section className="px-3 sm:px-4 lg:px-6 mt-8 sm:mt-12">
+        <div className="mb-5 flex items-end justify-between border-b-2 border-[#09090B] pb-4">
+          <div>
+            <span className="font-mono-label text-[10px] sm:text-xs text-[#09090B]/60 uppercase tracking-widest">Features</span>
+            <h2 className="font-display text-xl sm:text-3xl lg:text-4xl mt-1 glitch-text">
+              BUILT FOR READERS.
+            </h2>
+          </div>
+        </div>
+
+        {/* Grid: 1 col mobile → 2 col tablet → 3 col desktop */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+
+          {/* Big dark card — full width on mobile, 2 col on lg */}
+          <div
+            className="sm:col-span-2 lg:col-span-2 relative overflow-hidden rounded-2xl p-5 sm:p-7 min-h-[220px] sm:min-h-[260px] flex flex-col justify-between bg-[#09090B] border-2 border-[#09090B]"
+            style={{ boxShadow: '6px 6px 0px 0px #D2E823' }}
+          >
+            <div className="absolute inset-0 bg-cover bg-center opacity-30 rounded-2xl"
+              style={{ backgroundImage: `url(/assets/gallery/gallery-1.jpg)`, mixBlendMode: 'overlay' }} />
+            <div className="absolute inset-0 dot-texture-acid opacity-[0.04] rounded-2xl" />
+            <div className="relative z-10">
+              <span className="acid-sticker text-[10px]" style={{ transform: 'rotate(-1deg)' }}>
+                <Sparkles className="w-3 h-3" /> Core Feature
+              </span>
+            </div>
+            <div className="relative z-10 space-y-2 sm:space-y-3">
+              <h3 className="font-display text-[#D2E823] text-2xl sm:text-3xl lg:text-4xl glitch-text leading-tight">
+                FLUID REFLOW ENGINE
+              </h3>
+              <p className="font-body text-[#F8F4E8]/75 text-sm leading-relaxed max-w-md">
+                Dynamically extracts & reflows fixed-page PDFs into continuous multi-column book pages tuned to your exact viewport. No zoom fatigue.
+              </p>
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="btn-acid px-4 py-2.5 text-xs rounded-xl inline-flex"
+              >
+                <Upload className="w-3.5 h-3.5" />
+                TRY NOW
+                <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
           </div>
-        </section>
 
-        {/* Footer */}
-        <footer className="pt-10 border-t border-(--c-grey-line) flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-(--text-muted) pb-8">
-          <div className="flex items-center gap-2">
-            <span className="font-display font-bold text-(--c-ink)">Kindle Reflow</span>
-            <span>•</span>
-            <span>Inspired by Awake Digital Studio (Warsaw)</span>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <span>Client-Side PDF.js</span>
-            <span>IndexedDB Memory</span>
-            <span>Offline Dictionary</span>
-          </div>
-        </footer>
-      </main>
-
-      {/* Parsing Progress Modal with Awake Studio Panel */}
-      {isParsing && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md p-4 animate-in fade-in duration-200">
-          <div className="w-full max-w-md bg-white border border-(--c-grey-line) rounded-[2rem] p-8 shadow-2xl text-center space-y-6">
-            <div className="w-16 h-16 rounded-full bg-[#ff003d]/10 text-[#ff003d] flex items-center justify-center mx-auto">
-              <Sparkles className="w-7 h-7 text-[#ff003d] animate-spin" />
+          {/* Accent floating card */}
+          <div
+            className="relative overflow-hidden rounded-2xl p-5 min-h-[220px] flex flex-col justify-between bg-[#D2E823] border-2 border-[#09090B] float-card"
+            style={{ boxShadow: '5px 5px 0px 0px #09090B' }}
+          >
+            <div className="absolute inset-0 dot-texture opacity-[0.08] rounded-2xl" />
+            <div className="relative z-10"><BookOpen className="w-7 h-7 text-[#09090B]" /></div>
+            <div className="relative z-10 space-y-1.5">
+              <span className="font-mono-label text-[10px] text-[#09090B]/70 uppercase tracking-widest">02 / Spread</span>
+              <h3 className="font-display text-[#09090B] text-xl leading-tight">TWO-PAGE HARDCOVER</h3>
+              <p className="font-body text-[#09090B]/75 text-sm leading-relaxed">
+                Authentic dual-page spread with book spine shadow.
+              </p>
+              <button onClick={onOpenSampleBook} className="btn-paper px-3 py-2 text-xs rounded-xl inline-flex mt-1">
+                READ SAMPLE
+              </button>
             </div>
+          </div>
 
-            <div>
-              <span className="text-xs uppercase tracking-widest font-semibold text-[#ff003d]">Reflow Engine 2.0</span>
-              <h3 className="font-display font-bold text-2xl text-(--c-ink) tracking-tight mt-1">
-                Reflowing Document
-              </h3>
-              <p className="text-xs text-(--text-secondary) mt-1.5 leading-relaxed">
-                {parseProgress?.status || 'Analyzing typography, flowing paragraphs, and detecting headings...'}
+          {/* Dictionary card */}
+          <div className="acid-card relative overflow-hidden rounded-2xl p-5 min-h-[180px] flex flex-col justify-between">
+            <div><Volume2 className="w-6 h-6 text-[#09090B]" /></div>
+            <div className="space-y-1.5">
+              <span className="font-mono-label text-[10px] text-[#09090B]/60 uppercase tracking-widest">03 / Lexicon</span>
+              <h3 className="font-display text-[#09090B] text-lg leading-tight">OFFLINE DICT</h3>
+              <p className="font-body text-[#09090B]/65 text-xs leading-relaxed">
+                Tap any word for instant definitions & phonetics — zero internet.
               </p>
             </div>
+          </div>
 
-            {parseProgress && parseProgress.totalPages > 0 && (
-              <div className="space-y-2">
-                <div className="flex justify-between text-xs font-semibold text-(--text-muted) tabular-nums">
-                  <span>Page {parseProgress.currentPage}</span>
-                  <span>{parseProgress.totalPages} total pages</span>
-                </div>
-                <div className="w-full bg-(--c-grey-panel) h-2.5 rounded-full overflow-hidden p-0.5">
+          {/* Typography card */}
+          <div
+            className="relative overflow-hidden rounded-2xl p-5 min-h-[180px] flex flex-col justify-between bg-[#09090B] border-2 border-[#09090B]"
+            style={{ boxShadow: '4px 4px 0px 0px #D2E823' }}
+          >
+            <div><Type className="w-6 h-6 text-[#D2E823]" /></div>
+            <div className="space-y-2">
+              <span className="font-mono-label text-[10px] text-[#F8F4E8]/50 uppercase tracking-widest">04 / Typography</span>
+              <h3 className="font-display text-[#D2E823] text-lg leading-tight">BOOKERLY MODE</h3>
+              <div className="flex gap-1.5 flex-wrap pt-1">
+                {(['light', 'sepia', 'dark'] as const).map((t) => (
+                  <button
+                    key={t}
+                    onClick={() => onUpdateSettings({ theme: t })}
+                    className={`w-8 h-8 rounded-lg border-2 flex items-center justify-center transition-all ${
+                      settings.theme === t
+                        ? 'border-[#D2E823] scale-110'
+                        : 'border-[#F8F4E8]/20 hover:border-[#F8F4E8]/50'
+                    }`}
+                    title={t}
+                  >
+                    {t === 'light' ? <Sun className="w-3.5 h-3.5 text-[#F8F4E8]" />
+                      : t === 'sepia' ? <Coffee className="w-3.5 h-3.5 text-[#F8F4E8]" />
+                      : <Moon className="w-3.5 h-3.5 text-[#F8F4E8]" />}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Archive card */}
+          <div className="acid-card relative overflow-hidden rounded-2xl p-5 min-h-[180px] flex flex-col justify-between">
+            <div><Bookmark className="w-6 h-6 text-[#09090B]" /></div>
+            <div className="space-y-1.5">
+              <span className="font-mono-label text-[10px] text-[#09090B]/60 uppercase tracking-widest">05 / Memory</span>
+              <h3 className="font-display text-[#09090B] text-lg leading-tight">LOCAL VAULT</h3>
+              <p className="font-body text-[#09090B]/65 text-xs leading-relaxed">
+                Bookmarks & progress in private IndexedDB. No cloud.
+              </p>
+              <a href="#library-archive" className="btn-paper px-3 py-2 text-xs rounded-xl inline-flex mt-1">
+                ARCHIVE ({books.length})
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════════════════
+          HORIZONTAL SCROLL — "NEW DROPS"
+          ════════════════════════════════════════════════════ */}
+      {books.length > 0 && (
+        <section className="px-3 sm:px-4 lg:px-6 mt-8 sm:mt-12">
+          <div className="mb-4 flex items-center justify-between border-b-2 border-[#09090B] pb-3">
+            <div>
+              <span className="font-mono-label text-[10px] text-[#09090B]/60 uppercase tracking-widest">Your Collection</span>
+              <h2 className="font-display text-xl sm:text-2xl mt-0.5">NEW DROPS</h2>
+            </div>
+            <a href="#library-archive" className="btn-paper px-3 py-2 text-xs rounded-xl inline-flex">
+              All <ChevronRight className="w-3.5 h-3.5" />
+            </a>
+          </div>
+
+          <div className="h-scroll-container gap-3 sm:gap-4 -mx-3 px-3 sm:-mx-4 sm:px-4">
+            {books.slice(0, 6).map((book, i) => (
+              <div
+                key={book.id}
+                onClick={() => onOpenBook(book.id)}
+                className="shrink-0 w-44 sm:w-56"
+              >
+                <div
+                  className="border-2 border-[#09090B] rounded-xl overflow-hidden transition-all duration-200 active:scale-[0.97]"
+                  style={{ boxShadow: '4px 4px 0px 0px #09090B' }}
+                >
                   <div
-                    className="bg-[#ff003d] h-full rounded-full transition-all duration-150"
-                    style={{
-                      width: `${Math.round(
-                        (parseProgress.currentPage / parseProgress.totalPages) * 100
-                      )}%`,
-                    }}
-                  />
+                    className="h-24 sm:h-32 flex items-center justify-center"
+                    style={{ backgroundColor: book.coverColor || '#D2E823' }}
+                  >
+                    <span className="font-display text-[#09090B] text-xl">PDF</span>
+                  </div>
+                  <div className="bg-[#F8F4E8] p-3 border-t-2 border-[#09090B] space-y-1">
+                    <span className="font-mono-label text-[9px] text-[#09090B]/50 uppercase">
+                      {String(i + 1).padStart(2, '0')} · {book.pageCount}p
+                    </span>
+                    <h4 className="font-display text-xs truncate">{book.title}</h4>
+                    <span
+                      className="inline-flex items-center gap-1 px-2 py-1 bg-[#09090B] text-[#D2E823] rounded-md font-mono-label text-[9px] uppercase"
+                      style={{ boxShadow: '1px 1px 0px 0px #D2E823' }}
+                    >
+                      Resume <ArrowRight className="w-2 h-2" />
+                    </span>
+                  </div>
                 </div>
               </div>
-            )}
+            ))}
+          </div>
+        </section>
+      )}
 
-            <p className="text-[11px] text-(--text-muted) leading-relaxed">
-              This one-time parse is performed 100% locally on your device. The reflowed book will be stored in your browser's private IndexedDB for instant offline reading.
+      {/* ════════════════════════════════════════════════════
+          DROPZONE CTA
+          ════════════════════════════════════════════════════ */}
+      <section className="px-3 sm:px-4 lg:px-6 mt-8 sm:mt-12">
+        <div
+          onClick={() => fileInputRef.current?.click()}
+          className={`relative rounded-2xl sm:rounded-[24px] border-2 border-[#09090B] p-6 sm:p-10 lg:p-14 overflow-hidden flex flex-col sm:flex-row items-start sm:items-center gap-6 transition-all duration-200 active:scale-[0.99] ${
+            isDragOver ? 'bg-[#D2E823] -translate-x-1 -translate-y-1' : 'bg-[#09090B]'
+          }`}
+          style={{ boxShadow: '7px 7px 0px 0px #D2E823' }}
+        >
+          <div className="absolute inset-0 dot-texture-acid opacity-[0.06] rounded-2xl" />
+          <div className="relative z-10 flex-1 space-y-3">
+            <div
+              className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[#D2E823] border-2 border-[#F8F4E8] flex items-center justify-center"
+              style={{ boxShadow: '4px 4px 0px 0px #F8F4E8' }}
+            >
+              <Upload className="w-5 h-5 sm:w-6 sm:h-6 text-[#09090B]" />
+            </div>
+            <h2 className="font-display text-[#F8F4E8] text-2xl sm:text-4xl lg:text-5xl glitch-text leading-tight">
+              DROP ANY PDF.
+            </h2>
+            <p className="font-body text-[#F8F4E8]/65 text-sm leading-relaxed max-w-md">
+              Drag & drop or tap to select. Instantly reflows into a responsive book — no upload, no server, 100% private.
             </p>
+          </div>
+          <div className="relative z-10 flex flex-row sm:flex-col items-center gap-3 shrink-0">
+            <span className="acid-sticker text-xs float-card">
+              <Zap className="w-3.5 h-3.5" /> Instant
+            </span>
+            <ArrowRight className="w-8 h-8 sm:w-10 sm:h-10 text-[#D2E823]" />
+          </div>
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════════════════
+          BOOK ARCHIVE
+          ════════════════════════════════════════════════════ */}
+      <section id="library-archive" className="px-3 sm:px-4 lg:px-6 mt-8 sm:mt-12">
+        <div className="mb-5 flex flex-col xs:flex-row xs:items-end justify-between gap-2 border-b-2 border-[#09090B] pb-4">
+          <div>
+            <span className="font-mono-label text-[10px] text-[#09090B]/60 uppercase tracking-widest">Archive</span>
+            <h2 className="font-display text-xl sm:text-3xl mt-0.5">MY BOOKS ({books.length})</h2>
+          </div>
+          <p className="font-body text-xs text-[#09090B]/60 hidden sm:block max-w-[180px] text-right">
+            Cached locally. Tap to resume.
+          </p>
+        </div>
+
+        {books.length === 0 ? (
+          <div
+            className="rounded-2xl border-2 border-[#09090B] p-8 sm:p-12 text-center space-y-4"
+            style={{ boxShadow: '4px 4px 0px 0px #09090B' }}
+          >
+            <BookOpen className="w-10 h-10 mx-auto text-[#09090B]/25" />
+            <div className="space-y-1.5">
+              <h3 className="font-display text-lg">NO BOOKS YET.</h3>
+              <p className="font-body text-sm text-[#09090B]/55 max-w-xs mx-auto">
+                Drop any PDF above — it'll be cached here for instant offline access.
+              </p>
+            </div>
+            <button onClick={onOpenSampleBook} className="btn-acid px-5 py-3 rounded-xl inline-flex text-sm">
+              <BookOpen className="w-4 h-4" />
+              READ SAMPLE BOOK
+            </button>
+          </div>
+        ) : (
+          <div
+            className="rounded-2xl border-2 border-[#09090B] overflow-hidden"
+            style={{ boxShadow: '4px 4px 0px 0px #09090B' }}
+          >
+            {books.map((book, idx) => {
+              const lastRead = new Date(book.lastReadTime).toLocaleDateString(undefined, {
+                month: 'short', day: 'numeric', year: 'numeric',
+              });
+              return (
+                <div
+                  key={book.id}
+                  onClick={() => onOpenBook(book.id)}
+                  className={`archival-row p-4 sm:p-5 flex items-center justify-between gap-3 group ${idx < books.length - 1 ? 'border-b-2 border-[#09090B]' : ''}`}
+                >
+                  {/* Left */}
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <span className="font-mono-label text-[10px] text-[#09090B]/40 group-hover:text-[#09090B] transition-colors shrink-0">
+                      [{String(idx + 1).padStart(2, '0')}]
+                    </span>
+                    <div
+                      className="w-7 h-9 rounded-md border-2 border-[#09090B] shrink-0 flex items-center justify-center font-mono-label text-white text-[7px] font-bold"
+                      style={{ backgroundColor: book.coverColor || '#D2E823', boxShadow: '2px 2px 0px 0px #09090B' }}
+                    >
+                      PDF
+                    </div>
+                    <div className="min-w-0">
+                      <h3 className="font-display text-sm sm:text-base truncate">{book.title}</h3>
+                      <p className="font-body text-[10px] sm:text-xs text-[#09090B]/55 mt-0.5 truncate">
+                        {book.author || 'Local'} · {book.pageCount}p
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Right */}
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="archival-year font-mono-label text-[10px] text-[#09090B]/50 hidden sm:inline tabular-nums">
+                      {lastRead}
+                    </span>
+                    <span
+                      className="hidden xs:inline-flex items-center gap-1 px-2.5 py-1.5 font-display text-[10px] border-2 border-[#09090B] rounded-lg bg-[#F8F4E8] group-hover:bg-[#D2E823] transition-colors"
+                      style={{ boxShadow: '2px 2px 0px 0px #09090B' }}
+                    >
+                      Resume <ChevronRight className="w-3 h-3" />
+                    </span>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (confirm(`Remove "${book.title}" from local cache?`)) onDeleteBook(book.id);
+                      }}
+                      className="p-1.5 rounded-lg border-2 border-transparent hover:border-red-300 hover:bg-red-50 transition-all"
+                      title="Delete"
+                    >
+                      <Trash2 className="w-3.5 h-3.5 text-[#09090B]/40 hover:text-red-500" />
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
+      {/* ════════════════════════════════════════════════════
+          FOOTER
+          ════════════════════════════════════════════════════ */}
+      <footer className="mt-12 sm:mt-16 bg-[#09090B] text-[#F8F4E8] border-t-2 border-[#09090B]">
+        <div className="ticker-bar overflow-hidden border-t-0">
+          <div className="marquee-track">
+            <span className="px-4 whitespace-nowrap text-sm">{tickerDouble}</span>
+            <span className="px-4 whitespace-nowrap text-sm">{tickerDouble}</span>
+          </div>
+        </div>
+
+        <div className="px-4 sm:px-6 py-10 sm:py-14">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10">
+            {/* Brand */}
+            <div className="col-span-2 sm:col-span-2 lg:col-span-1 space-y-3">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 bg-[#D2E823] rounded-md border-2 border-[#F8F4E8] flex items-center justify-center"
+                  style={{ boxShadow: '2px 2px 0px 0px #D2E823' }}>
+                  <span className="font-display text-[#09090B] text-sm">K</span>
+                </div>
+                <span className="font-display text-[#F8F4E8] text-base">KINDLE-REFLOW</span>
+              </div>
+              <p className="font-body text-[#F8F4E8]/55 text-xs leading-relaxed">
+                The Neo-Brutalist PDF reader that actually reads like a book. Install on Android.
+              </p>
+              <div className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="font-mono-label text-[#F8F4E8]/40 text-[10px] uppercase tracking-widest">100% Client-Side</span>
+              </div>
+            </div>
+
+            {/* Store */}
+            <div className="space-y-3">
+              <span className="font-mono-label text-[#F8F4E8]/35 text-[10px] uppercase tracking-widest">Store</span>
+              <ul className="space-y-2">
+                {[
+                  { label: 'Open PDF', action: () => fileInputRef.current?.click() },
+                  { label: 'Sample Book', action: onOpenSampleBook },
+                  { label: 'My Archive', href: '#library-archive' },
+                ].map(({ label, action, href }) => (
+                  <li key={label}>
+                    {href ? (
+                      <a href={href} className="font-display text-xs text-[#F8F4E8] hover:text-[#D2E823] uppercase tracking-wide transition-colors">
+                        {label}
+                      </a>
+                    ) : (
+                      <button onClick={action} className="font-display text-xs text-[#F8F4E8] hover:text-[#D2E823] uppercase tracking-wide transition-colors">
+                        {label}
+                      </button>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Info */}
+            <div className="space-y-3">
+              <span className="font-mono-label text-[#F8F4E8]/35 text-[10px] uppercase tracking-widest">Info</span>
+              <ul className="space-y-2">
+                {['Reflow Engine', 'Typography', 'Dictionary', 'Privacy', 'Open Source'].map((l) => (
+                  <li key={l}>
+                    <span className="font-display text-xs text-[#F8F4E8] hover:text-[#D2E823] uppercase tracking-wide transition-colors">
+                      {l}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Newsletter */}
+            <div className="col-span-2 sm:col-span-1 space-y-3">
+              <span className="font-mono-label text-[#F8F4E8]/35 text-[10px] uppercase tracking-widest">Newsletter</span>
+              <p className="font-body text-[#F8F4E8]/50 text-xs leading-relaxed">
+                Get updates on new features.
+              </p>
+              <div className="flex flex-col gap-2">
+                <input type="email" placeholder="your@email.com" className="acid-input text-sm" />
+                <button
+                  className="btn-acid btn-acid-sm w-full justify-center rounded-lg"
+                  style={{ background: '#D2E823', color: '#09090B', border: '2px solid #F8F4E8' }}
+                >
+                  SUBSCRIBE <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom bar */}
+          <div className="mt-10 pt-5 border-t-2 border-[#F8F4E8]/10 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <span className="font-mono-label text-[#F8F4E8]/35 text-[10px] text-center sm:text-left">
+              © 2024 KINDLE-REFLOW · NEO-BRUTALIST ACID EDITION
+            </span>
+            <span className="font-mono-label text-[#F8F4E8]/25 text-[10px]">
+              {currentTimeStr} · PWA v2.0.0
+            </span>
+          </div>
+        </div>
+      </footer>
+
+      {/* ════════════════════════════════════════════════════
+          FULL-SCREEN MENU OVERLAY
+          ════════════════════════════════════════════════════ */}
+      {isMenuOpen && (
+        <div className="fixed inset-0 z-[100] bg-[#09090B] flex flex-col p-5 sm:p-10 animate-in fade-in duration-200 overflow-y-auto">
+          <div className="flex items-center justify-between border-b-2 border-[#F8F4E8]/10 pb-5 shrink-0">
+            <div className="flex items-center gap-2.5">
+              <span className="font-display text-[#D2E823] text-xl sm:text-2xl">KINDLE-REFLOW</span>
+              <span className="acid-sticker text-[9px]">Menu</span>
+            </div>
+            <button
+              onClick={() => setIsMenuOpen(false)}
+              className="btn-acid btn-acid-sm rounded-xl"
+              style={{ background: '#F8F4E8', color: '#09090B' }}
+            >
+              <X className="w-4 h-4" />
+              <span className="hidden sm:inline">CLOSE</span>
+            </button>
+          </div>
+
+          <div className="flex-1 flex flex-col justify-center py-6">
+            <ul className="space-y-4 sm:space-y-7">
+              {[
+                { label: '01. UPLOAD LOCAL PDF', action: () => { setIsMenuOpen(false); fileInputRef.current?.click(); } },
+                { label: '02. READ CLASSIC SAMPLE', action: () => { setIsMenuOpen(false); onOpenSampleBook(); } },
+                { label: '03. MY BOOK ARCHIVE', href: '#library-archive' },
+                { label: '04. THEME SETTINGS', action: () => setIsMenuOpen(false) },
+              ].map(({ label, action, href }) => (
+                <li key={label}>
+                  {href ? (
+                    <a
+                      href={href}
+                      onClick={() => setIsMenuOpen(false)}
+                      className="font-display text-[#F8F4E8] hover:text-[#D2E823] transition-colors glitch-text block hover:translate-x-2 transition-transform duration-200"
+                      style={{ fontSize: 'clamp(1.4rem, 5vw, 3.5rem)' }}
+                    >
+                      {label}
+                    </a>
+                  ) : (
+                    <button
+                      onClick={action}
+                      className="font-display text-[#F8F4E8] hover:text-[#D2E823] transition-colors glitch-text block text-left hover:translate-x-2 transition-transform duration-200 w-full"
+                      style={{ fontSize: 'clamp(1.4rem, 5vw, 3.5rem)' }}
+                    >
+                      {label}
+                    </button>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="pt-4 border-t-2 border-[#F8F4E8]/10 flex items-center justify-between shrink-0">
+            <span className="font-mono-label text-[#F8F4E8]/35 text-[10px] uppercase tracking-widest">v2.0.0 · Acid Edition · PWA</span>
+            <span className="font-mono-label text-[#F8F4E8]/25 text-[10px]">{currentTimeStr}</span>
           </div>
         </div>
       )}
     </div>
   );
 };
+
+export default LibraryView;

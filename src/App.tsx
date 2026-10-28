@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { AcidCursor } from './components/AcidCursor';
 import {
   StoredBook,
   BookMetadata,
@@ -127,6 +128,7 @@ export function App() {
 
   return (
     <div className="w-full h-full min-h-screen">
+      <AcidCursor />
       {activeBook ? (
         <KindleReader
           book={activeBook}

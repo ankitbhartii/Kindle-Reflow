@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="152" height="152" viewBox="0 0 152 152" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="152" height="152" fill="#09090B"/>
+  <!-- Inner card -->
+  <rect x="18.24" y="18.24" width="115.52000000000001" height="115.52000000000001" rx="33.44" fill="#D2E823"/>
+  <!-- "K" Letter -->
+  <text
+    x="76"
+    y="94.24"
+    font-family="Georgia, serif"
+    font-size="57.76"
+    font-weight="bold"
+    fill="#09090B"
+    text-anchor="middle"
+    dominant-baseline="auto">K</text>
+  <!-- Dot accent -->
+  <circle cx="103.36000000000001" cy="48.64" r="8.36" fill="#09090B"/>
+  <!-- Sub label -->
+  <text
+    x="76"
+    y="130.72"
+    font-family="monospace"
+    font-size="24.32"
+    font-weight="bold"
+    fill="#09090B"
+    text-anchor="middle"
+    letter-spacing="3.6479999999999997">REFLOW</text>
+</svg>
